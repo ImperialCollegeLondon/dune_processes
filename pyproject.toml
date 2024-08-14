@@ -30,7 +30,7 @@ disallow_any_generics = true
 warn_unreachable = true
 warn_unused_ignores = true
 disallow_untyped_defs = true
-exclude = [".venv/", "manage.py"]
+exclude = [".venv/", "manage.py", "main/migrations/"]
 
 [[tool.mypy.overrides]]
 module = "tests.*"
@@ -40,6 +40,7 @@ disallow_untyped_defs = false
 addopts = "-v --mypy -p no:warnings --cov=dune_processes --cov-report=html --doctest-modules --ignore=dune_processes/__main__.py"
 
 [tool.ruff]
+exclude = ["main/migrations"]
 target-version = "py312"
 
 [tool.ruff.lint]
