@@ -40,7 +40,6 @@ disallow_untyped_defs = false
 
 [tool.pytest.ini_options]
 addopts = "-v --mypy -p no:warnings --cov=dune_processes --cov-report=html --doctest-modules --ignore=manage.py --ignore=dune_processes/settings/"
-DJANGO_SETTINGS_MODULE = "dune_processes.settings.settings"
 
 [tool.ruff]
 exclude = ["main/migrations"]
