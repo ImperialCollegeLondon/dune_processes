@@ -41,6 +41,10 @@ plugins = ["mypy_django_plugin.main"]
 module = "tests.*"
 disallow_untyped_defs = false
 
+[[tool.mypy.overrides]]
+module = ["druncschema.*", "drunc.*"]
+ignore_missing_imports = true
+
 [tool.django-stubs]
 django_settings_module = "dune_processes.settings"
 
