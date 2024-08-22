@@ -1,0 +1,8 @@
+*
+!main
+!manage.py
+!pyproject.toml
+!poetry.lock
+!dune_processes
+!db
+db/*
