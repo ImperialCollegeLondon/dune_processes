@@ -17,10 +17,14 @@ import asyncio
 
 from drunc.process_manager.process_manager_driver import ProcessManagerDriver
 from drunc.utils.shell_utils import create_dummy_token_from_uname
-from druncschema.process_manager_pb2 import ProcessQuery
+from druncschema.process_manager_pb2 import (
+    ProcessInstance,
+    ProcessInstanceList,
+    ProcessQuery,
+)
 
 
-async def create_session(pmd: ProcessManagerDriver):
+async def create_session(pmd: ProcessManagerDriver) -> list[ProcessInstance]:
     """Create a process manager session using the dummy_boot command."""
     return [
         item
@@ -34,13 +38,13 @@ async def create_session(pmd: ProcessManagerDriver):
     ]
 
 
-async def get_session_info(pmd: ProcessManagerDriver):
+async def get_session_info(pmd: ProcessManagerDriver) -> ProcessInstanceList:
     """Get info about all sessions from process manager."""
     query = ProcessQuery(names=[".*"])
     return await pmd.ps(query)
 
 
-async def main():
+async def main() -> ProcessInstanceList:
     """Run the script."""
     token = create_dummy_token_from_uname()
     pmd = ProcessManagerDriver("drunc:10054", token=token, aio_channel=True)
