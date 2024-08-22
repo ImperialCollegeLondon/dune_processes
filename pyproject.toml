@@ -11,6 +11,8 @@ authors = [
 python = "^3.12"
 django = "^5.1"
 whitenoise = "^6.7.0"
+drunc = {git = "https://github.com/DUNE-DAQ/drunc.git"}
+druncschema = {git = "https://github.com/DUNE-DAQ/druncschema.git"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2"
