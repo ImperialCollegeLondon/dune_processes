@@ -53,5 +53,6 @@ async def main() -> ProcessInstanceList:
     return await get_session_info(pmd)
 
 
-val = asyncio.run(main())
-print(val.data)
+if __name__ == "__main__":
+    val = asyncio.run(main())
+    print(val.data)
