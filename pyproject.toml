@@ -12,13 +12,15 @@ python = "^3.12"
 django = "^5.1"
 whitenoise = "^6.7.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^8.2"
 pytest-cov = "^5.0.0"
 pytest-mypy = "^0.10.0"
 pytest-mock = "^3.7.0"
 pre-commit = "^3.0.4"
 ruff = "^0.5.6"
+django-stubs = { extras = ["compatible-mypy"], version = "^5.0.4" }
+pytest-django = "^4.8.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -30,16 +32,22 @@ disallow_any_generics = true
 warn_unreachable = true
 warn_unused_ignores = true
 disallow_untyped_defs = true
-exclude = [".venv/", "manage.py"]
+exclude = [".venv/", "manage.py", "main/migrations/"]
+plugins = ["mypy_django_plugin.main"]
 
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
 
+[tool.django-stubs]
+django_settings_module = "dune_processes.settings"
+
 [tool.pytest.ini_options]
-addopts = "-v --mypy -p no:warnings --cov=dune_processes --cov-report=html --doctest-modules --ignore=dune_processes/__main__.py"
+addopts = "-v --mypy -p no:warnings --cov=dune_processes --cov-report=html --doctest-modules --ignore=manage.py --ignore=dune_processes/settings/"
+DJANGO_SETTINGS_MODULE = "dune_processes.settings"
 
 [tool.ruff]
+exclude = ["main/migrations"]
 target-version = "py312"
 
 [tool.ruff.lint]
