@@ -1,29 +1,11 @@
 {% extends "main/base.html" %}
+{% load render_table from django_tables2 %}
 
 {% block title %}Home{% endblock title %}
 
 {% block content %}
 Welcome to the index page.
 
-<table border="1">
-    <tr>
-        <th>uuid</th>
-        <th>name</th>
-        <th>user</th>
-        <th>session</th>
-        <th>status code</th>
-        <th>exit code</th>
-    </tr>
-    {% for value in values %}
-    <tr>
-        <td>{{ value.uuid.uuid }}</td>
-        <td>{{ value.process_description.metadata.name }}</td>
-        <td>{{ value.process_description.metadata.user }}</td>
-        <td>{{ value.process_description.metadata.session }}</td>
-        <td>{{ value.status_code }}</td>
-        <td>{{ value.return_code }}</td>
-    </tr>
-    {% endfor %}
-</table>
+{% render_table table %}
 
 {% endblock content %}
