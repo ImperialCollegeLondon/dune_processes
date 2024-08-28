@@ -12,5 +12,14 @@ services:
     volumes:
       - .:/usr/src/app
       - db:/usr/src/app/db
+  drunc:
+    build: ./drunc_docker_service/
+    command:
+      - sh
+      - -c
+      - |
+        drunc-process-manager file:///process-manager-no-kafka.json
+    expose:
+      - 10054
 volumes:
   db:

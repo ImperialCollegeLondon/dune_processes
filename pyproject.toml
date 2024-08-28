@@ -11,6 +11,8 @@ authors = [
 python = "^3.12"
 django = "^5.1"
 whitenoise = "^6.7.0"
+drunc = {git = "https://github.com/DUNE-DAQ/drunc.git"}
+druncschema = {git = "https://github.com/DUNE-DAQ/druncschema.git"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2"
@@ -38,6 +40,10 @@ plugins = ["mypy_django_plugin.main"]
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = ["druncschema.*", "drunc.*"]
+ignore_missing_imports = true
 
 [tool.django-stubs]
 django_settings_module = "dune_processes.settings"
