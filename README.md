@@ -1,12 +1,6 @@
 # dune_processes
 
-[Description for project.]
-
-This is a Python application that uses [poetry](https://python-poetry.org) for packaging
-and dependency management. It also provides [pre-commit](https://pre-commit.com/) hooks
-(for [ruff](https://pypi.org/project/ruff/) and
-[mypy](https://mypy.readthedocs.io/en/stable/)) and automated tests using
-[pytest](https://pytest.org/) and [GitHub Actions](https://github.com/features/actions).
+This repo defines the web app for the Dune Process Manager web interface.
 
 ## For developers
 
@@ -38,13 +32,24 @@ To get started:
    pre-commit install
    ```
 
-1. Run the main app:
+1. Run the main app (this will not receive any data from the drunc process manager):
 
    ```bash
-   python -m dune_processes
+   python manage.py runserver
    ```
 
-## Publishing
+### Running the App
 
-The GitHub workflow includes an action to publish on release.
-To run this action, uncomment the commented portion of `publish.yml`, and modify the steps for the desired behaviour (publishing a Docker image, publishing to PyPI, deploying documentation etc.)
+To run this with a demo version of the drunc process manager, run it with docker compose:
+
+```bash
+docker compose up -d
+```
+
+Dummy processes can be sent to the server with the `scripts/talk_to_process_manager.py` script:
+
+```bash
+docker compose exec app python scripts/talk_to_process_manager.py
+```
+
+Take the servers down with `docker compose down`
