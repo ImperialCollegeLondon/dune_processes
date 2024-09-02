@@ -11,8 +11,9 @@ authors = [
 python = "^3.12"
 django = "^5.1"
 whitenoise = "^6.7.0"
-drunc = {git = "https://github.com/DUNE-DAQ/drunc.git"}
-druncschema = {git = "https://github.com/DUNE-DAQ/druncschema.git"}
+drunc = { git = "https://github.com/DUNE-DAQ/drunc.git" }
+druncschema = { git = "https://github.com/DUNE-DAQ/druncschema.git" }
+django-tables2 = "^2.7.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2"
@@ -42,7 +43,7 @@ module = "tests.*"
 disallow_untyped_defs = false
 
 [[tool.mypy.overrides]]
-module = ["druncschema.*", "drunc.*"]
+module = ["druncschema.*", "drunc.*", "django_tables2.*"]
 ignore_missing_imports = true
 
 [tool.django-stubs]

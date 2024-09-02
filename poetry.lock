@@ -242,6 +242,23 @@ django = "*"
 typing-extensions = "*"
 
 [[package]]
+name = "django-tables2"
+version = "2.7.0"
+description = "Table/data-grid framework for Django"
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-tables2-2.7.0.tar.gz", hash = "sha256:4113fcc575eb438a12e83a4d4ea01452e4800d970e8bdd0e4122ac171af1900d"},
+    {file = "django_tables2-2.7.0-py2.py3-none-any.whl", hash = "sha256:99e06d966ca8ac69fd74092eb45c79a280dd5ca0ccb81395d96261f62128e1af"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+
+[package.extras]
+tablib = ["tablib"]
+
+[[package]]
 name = "drunc"
 version = "0.10.4"
 description = ""
@@ -1040,4 +1057,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "5f88c6eb001bf424819dfad74e1d1cbbc0acde662046b4b75155e01e8544022a"
+content-hash = "a133b14fb4ec2bc36325e5d21430bb79ae9d4ded19dde59217371cbeac6e3d8f"
