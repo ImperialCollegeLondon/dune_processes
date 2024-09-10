@@ -12,4 +12,5 @@ urlpatterns = [
     path("flush/<uuid:uuid>", views.flush_process, name="flush"),
     path("logs/<uuid:uuid>", views.logs, name="logs"),
     path("boot_process/", views.BootProcessView.as_view(), name="boot_process"),
+    path("message/", views.deposit_message, name="message"),
 ]

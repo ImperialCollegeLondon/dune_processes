@@ -3,11 +3,14 @@
 import asyncio
 import uuid
 from enum import Enum
+from http import HTTPStatus
 
 import django_tables2
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.views.generic.edit import FormView
 from drunc.process_manager.process_manager_driver import ProcessManagerDriver
 from drunc.utils.shell_utils import DecodedResponse, create_dummy_token_from_uname
@@ -21,6 +24,11 @@ from druncschema.process_manager_pb2 import (
 
 from .forms import BootProcessForm
 from .tables import ProcessTable
+
+# extreme hackiness suitable only for demonstration purposes
+# will replace this with per-user session storage - once we've added auth
+MESSAGES: list[str] = []
+"""Broadcast messages to display to the user."""
 
 
 def get_process_manager_driver() -> ProcessManagerDriver:
@@ -63,8 +71,10 @@ def index(request: HttpRequest) -> HttpResponse:
     table_configurator = django_tables2.RequestConfig(request)
     table_configurator.configure(table)
 
-    context = {"table": table}
+    global MESSAGES
+    MESSAGES, messages = [], MESSAGES
 
+    context = {"table": table, "messages": messages}
     return render(request=request, context=context, template_name="main/index.html")
 
 
@@ -199,3 +209,18 @@ class BootProcessView(FormView):  # type: ignore [type-arg]
         """
         asyncio.run(_boot_process("root", form.cleaned_data))
         return super().form_valid(form)
+
+
+@require_POST
+@csrf_exempt
+def deposit_message(request: HttpRequest) -> HttpResponse:
+    """Upload point for broadcast messages for display to end user.
+
+    Args:
+      request: the triggering request.
+
+    Returns:
+      A NO_CONTENT response.
+    """
+    MESSAGES.append(request.POST["message"])
+    return HttpResponse(status=HTTPStatus.NO_CONTENT)
