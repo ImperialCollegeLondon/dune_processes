@@ -2,6 +2,14 @@
 
 import django_tables2 as tables
 
+kill_column_template = (
+    "<a href={href} onclick=\"return confirm('{message}')\">{text}</a>".format(
+        href="\"{% url 'kill' record.uuid%}\"",
+        message="You are about to kill process {{record.uuid}}. Are you sure?",
+        text="KILL",
+    )
+)
+
 
 class ProcessTable(tables.Table):
     """Defines and Process Table for the data from the Process Manager."""
@@ -12,7 +20,4 @@ class ProcessTable(tables.Table):
     session = tables.Column(verbose_name="Session")
     status_code = tables.Column(verbose_name="Status Code")
     exit_code = tables.Column(verbose_name="Exit Code")
-    kill = tables.TemplateColumn(
-        "<a href=\"{% url 'kill' record.uuid %}\" onclick=\"return confirm('You are about to kill process {{record.uuid}}. Are you sure?')\">KILL</a>",  # noqa: E501
-        verbose_name="Kill",
-    )
+    kill = tables.TemplateColumn(kill_column_template, verbose_name="Kill")

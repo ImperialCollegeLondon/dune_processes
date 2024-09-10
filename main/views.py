@@ -1,9 +1,11 @@
 """Views for the main app."""
 
 import asyncio
+import uuid
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from drunc.process_manager.process_manager_driver import ProcessManagerDriver
 from drunc.utils.shell_utils import create_dummy_token_from_uname
 from druncschema.process_manager_pb2 import (
@@ -66,7 +68,7 @@ async def _kill_process_call(uuid: str) -> None:
     await pmd.kill(query)
 
 
-def kill_process(request: HttpRequest, uuid: str) -> HttpResponse:
+def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Kill a process with a given UUID.
 
     Args:
@@ -76,5 +78,5 @@ def kill_process(request: HttpRequest, uuid: str) -> HttpResponse:
     Returns:
         HttpResponse redirecting to the index page.
     """
-    asyncio.run(_kill_process_call(uuid))
-    return HttpResponseRedirect("main:index")
+    asyncio.run(_kill_process_call(str(uuid)))
+    return HttpResponseRedirect(reverse("index"))
