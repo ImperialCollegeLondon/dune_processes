@@ -6,4 +6,5 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("kill/<uuid:uuid>/", views.kill_process, name="kill"),
 ]
