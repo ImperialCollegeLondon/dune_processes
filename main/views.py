@@ -3,6 +3,7 @@
 import asyncio
 import uuid
 
+import django_tables2
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -37,11 +38,11 @@ def index(request: HttpRequest) -> HttpResponse:
 
     status_enum_lookup = dict(item[::-1] for item in ProcessInstance.StatusCode.items())
 
-    table = []
+    table_data = []
     process_instances = val.data.values
     for process_instance in process_instances:
         metadata = process_instance.process_description.metadata
-        table.append(
+        table_data.append(
             {
                 "uuid": process_instance.uuid.uuid,
                 "name": metadata.name,
@@ -52,16 +53,48 @@ def index(request: HttpRequest) -> HttpResponse:
             }
         )
 
-    context = {"table": ProcessTable(table)}
+    table = ProcessTable(table_data)
+
+    # sort table data based on request parameters
+    table_configurator = django_tables2.RequestConfig(request)
+    table_configurator.configure(table)
+
+    context = {"table": table}
 
     return render(request=request, context=context, template_name="main/index.html")
+
+
+async def _restart_process_call(uuid: str) -> None:
+    """Restart a process with a given UUID.
+
+    Args:
+        uuid: UUID of the process to be restarted.
+    """
+    pmd = get_process_manager_driver()
+    query = ProcessQuery(uuids=[ProcessUUID(uuid=uuid)])
+    await pmd.restart(query)
+
+
+def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
+    """Restart the process associated to the given UUID.
+
+    Args:
+        request: HttpRequest object. This is not used in the function, but is required
+            by Django.
+        uuid: UUID of the process to be restarted.
+
+    Returns:
+        HttpResponse, redirecting to the main page.
+    """
+    asyncio.run(_restart_process_call(str(uuid)))
+    return HttpResponseRedirect(reverse("index"))
 
 
 async def _kill_process_call(uuid: str) -> None:
     """Kill a process with a given UUID.
 
     Args:
-        uuid: UUID of the process to kill.
+        uuid: UUID of the process to be killed.
     """
     pmd = get_process_manager_driver()
     query = ProcessQuery(uuids=[ProcessUUID(uuid=uuid)])
@@ -69,11 +102,11 @@ async def _kill_process_call(uuid: str) -> None:
 
 
 def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
-    """Kill a process with a given UUID.
+    """Kill the process associated to the given UUID.
 
     Args:
         request: Django HttpRequest object (unused, but required by Django).
-        uuid: UUID of the process to kill.
+        uuid: UUID of the process to be killed.
 
     Returns:
         HttpResponse redirecting to the index page.

@@ -18,7 +18,8 @@ services:
       - sh
       - -c
       - |
-        drunc-process-manager file:///process-manager-no-kafka.json
+        service ssh start &&
+        drunc-process-manager --log-level debug file:///process-manager-no-kafka.json
     expose:
       - 10054
 volumes:
