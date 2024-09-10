@@ -83,10 +83,11 @@ async def _process_call(uuid: str, action: ProcessAction) -> None:
     pmd = get_process_manager_driver()
     query = ProcessQuery(uuids=[ProcessUUID(uuid=uuid)])
 
-    if action == ProcessAction.RESTART:
-        await pmd.restart(query)
-    if action == ProcessAction.KILL:
-        await pmd.kill(query)
+    match action:
+        case ProcessAction.RESTART:
+            await pmd.restart(query)
+        case ProcessAction.KILL:
+            await pmd.kill(query)
 
 
 def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
