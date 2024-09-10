@@ -14,6 +14,8 @@ of all sessions and prints them to stdout.
 """
 
 import asyncio
+import random
+import string
 
 from drunc.process_manager.process_manager_driver import ProcessManagerDriver
 from drunc.utils.shell_utils import create_dummy_token_from_uname
@@ -30,7 +32,7 @@ async def create_session(pmd: ProcessManagerDriver) -> list[ProcessInstance]:
         item
         async for item in pmd.dummy_boot(
             user="root",
-            session_name="sess_name",
+            session_name="".join(random.choices(string.ascii_lowercase, k=10)),
             n_processes=1,
             sleep=5,
             n_sleeps=4,
