@@ -10,6 +10,14 @@ restart_column_template = (
     )
 )
 
+kill_column_template = (
+    "<a href={href} onclick=\"return confirm('{message}')\">{text}</a>".format(
+        href="\"{% url 'kill' record.uuid%}\"",
+        message="You are about to kill process {{record.uuid}}. Are you sure?",
+        text="KILL",
+    )
+)
+
 
 class ProcessTable(tables.Table):
     """Defines and Process Table for the data from the Process Manager."""
@@ -21,3 +29,4 @@ class ProcessTable(tables.Table):
     status_code = tables.Column(verbose_name="Status Code")
     exit_code = tables.Column(verbose_name="Exit Code")
     restart = tables.TemplateColumn(restart_column_template, verbose_name="Restart")
+    kill = tables.TemplateColumn(kill_column_template, verbose_name="Kill")
