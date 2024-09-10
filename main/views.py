@@ -57,7 +57,11 @@ def index(request: HttpRequest) -> HttpResponse:
 
 
 async def _restart_process_call(uuid: str) -> None:
-    """Get info about all sessions from process manager."""
+    """Get info about all sessions from process manager.
+
+    Args:
+        uuid: UUID of the process to be restarted.
+    """
     pmd = get_process_manager_driver()
     query = ProcessQuery(uuids=[ProcessUUID(uuid=uuid)])
     await pmd.restart(query)
