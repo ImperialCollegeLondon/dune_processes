@@ -12,3 +12,7 @@ class ProcessTable(tables.Table):
     session = tables.Column(verbose_name="Session")
     status_code = tables.Column(verbose_name="Status Code")
     exit_code = tables.Column(verbose_name="Exit Code")
+    kill = tables.TemplateColumn(
+        "<a href=\"{% url 'kill' record.uuid %}\" onclick=\"return confirm('You are about to kill process {{record.uuid}}. Are you sure?')\">KILL</a>",  # noqa: E501
+        verbose_name="Kill",
+    )
