@@ -130,3 +130,6 @@ MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 AUTH_USER_MODEL = "main.User"
+
+INSTALLED_APPS += ["django_bootstrap5"]
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
