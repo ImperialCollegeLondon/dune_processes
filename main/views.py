@@ -55,8 +55,10 @@ def index(request: HttpRequest) -> HttpResponse:
 
     table = ProcessTable(table_data)
 
+    # sort table data based on request parameters
     table_configurator = django_tables2.RequestConfig(request)
     table_configurator.configure(table)
+
     context = {"table": table}
 
     return render(request=request, context=context, template_name="main/index.html")
