@@ -29,11 +29,11 @@ async def create_session(pmd: ProcessManagerDriver) -> list[ProcessInstance]:
     return [
         item
         async for item in pmd.dummy_boot(
-            user="DUMMY_USER",
+            user="root",
             session_name="sess_name",
             n_processes=1,
-            sleep=2,
-            n_sleeps=2,
+            sleep=5,
+            n_sleeps=4,
         )
     ]
 
