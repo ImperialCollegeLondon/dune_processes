@@ -9,8 +9,9 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from drunc.process_manager.process_manager_driver import ProcessManagerDriver
-from drunc.utils.shell_utils import create_dummy_token_from_uname
+from drunc.utils.shell_utils import DecodedResponse, create_dummy_token_from_uname
 from druncschema.process_manager_pb2 import (
+    LogRequest,
     ProcessInstance,
     ProcessInstanceList,
     ProcessQuery,
@@ -117,3 +118,33 @@ def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """
     asyncio.run(_process_call(str(uuid), ProcessAction.KILL))
     return HttpResponseRedirect(reverse("index"))
+
+
+async def _get_process_logs(uuid: str) -> list[DecodedResponse]:
+    """Retrieve logs for a process from the process manager.
+
+    Args:
+      uuid: UUID of the process.
+
+    Returns:
+      The process logs.
+    """
+    pmd = get_process_manager_driver()
+    query = ProcessQuery(uuids=[ProcessUUID(uuid=uuid)])
+    request = LogRequest(query=query, how_far=100)
+    return [item async for item in pmd.logs(request)]
+
+
+def logs(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
+    """Display the logs of a process.
+
+    Args:
+      request: the triggering request.
+      uuid: identifier for the process.
+
+    Returns:
+      The rendered page.
+    """
+    logs_response = asyncio.run(_get_process_logs(str(uuid)))
+    context = dict(log_text="\n".join(val.data.line for val in logs_response))
+    return render(request=request, context=context, template_name="main/logs.html")
