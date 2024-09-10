@@ -1,8 +1,9 @@
 """Views for the main app."""
 
 import asyncio
+import logging
 
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from drunc.process_manager.process_manager_driver import ProcessManagerDriver
 from drunc.utils.shell_utils import create_dummy_token_from_uname
@@ -47,3 +48,17 @@ def index(request: HttpRequest) -> HttpResponse:
     context = {"table": ProcessTable(table)}
 
     return render(request=request, context=context, template_name="main/index.html")
+
+
+def restart_process(request: HttpRequest, uuid: str) -> HttpResponse:
+    """Restart the process associated to the given uuid.
+
+    Args:
+        request: HttpRequest object.
+        uuid: UUID of the process to be restarted.
+
+    Returns:
+        HttpResponse, redirecting to the main page.
+    """
+    logging.warning(f"Restarting process with UUID: {uuid}")
+    return HttpResponseRedirect("/")
