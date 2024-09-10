@@ -77,7 +77,7 @@ async def _process_call(uuid: str, action: ProcessAction) -> None:
     """Perform an action on a process with a given UUID.
 
     Args:
-        uuid: UUID of the process to be restarted.
+        uuid: UUID of the process to be actioned.
         action: Action to be performed {restart,kill}.
     """
     pmd = get_process_manager_driver()
