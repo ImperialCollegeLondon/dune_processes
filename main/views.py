@@ -2,6 +2,7 @@
 
 import asyncio
 import uuid
+from enum import Enum
 
 import django_tables2
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -64,15 +65,28 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request=request, context=context, template_name="main/index.html")
 
 
-async def _restart_process_call(uuid: str) -> None:
-    """Restart a process with a given UUID.
+# an enum for process actions
+class ProcessAction(Enum):
+    """Enum for process actions."""
+
+    RESTART = "restart"
+    KILL = "kill"
+
+
+async def _process_call(uuid: str, action: ProcessAction) -> None:
+    """Perform an action on a process with a given UUID.
 
     Args:
         uuid: UUID of the process to be restarted.
+        action: Action to be performed {restart,kill}.
     """
     pmd = get_process_manager_driver()
     query = ProcessQuery(uuids=[ProcessUUID(uuid=uuid)])
-    await pmd.restart(query)
+
+    if action == ProcessAction.RESTART:
+        await pmd.restart(query)
+    if action == ProcessAction.KILL:
+        await pmd.kill(query)
 
 
 def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
@@ -86,19 +100,8 @@ def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     Returns:
         HttpResponse, redirecting to the main page.
     """
-    asyncio.run(_restart_process_call(str(uuid)))
+    asyncio.run(_process_call(str(uuid), ProcessAction.RESTART))
     return HttpResponseRedirect(reverse("index"))
-
-
-async def _kill_process_call(uuid: str) -> None:
-    """Kill a process with a given UUID.
-
-    Args:
-        uuid: UUID of the process to be killed.
-    """
-    pmd = get_process_manager_driver()
-    query = ProcessQuery(uuids=[ProcessUUID(uuid=uuid)])
-    await pmd.kill(query)
 
 
 def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
@@ -111,5 +114,5 @@ def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     Returns:
         HttpResponse redirecting to the index page.
     """
-    asyncio.run(_kill_process_call(str(uuid)))
+    asyncio.run(_process_call(str(uuid), ProcessAction.KILL))
     return HttpResponseRedirect(reverse("index"))
