@@ -32,8 +32,8 @@ async def create_session(pmd: ProcessManagerDriver) -> list[ProcessInstance]:
             user="root",
             session_name="sess_name",
             n_processes=1,
-            sleep=2,
-            n_sleeps=2,
+            sleep=5,
+            n_sleeps=4,
         )
     ]
 
