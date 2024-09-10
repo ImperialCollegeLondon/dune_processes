@@ -18,6 +18,8 @@ kill_column_template = (
     )
 )
 
+flush_column_template = "<a href=\"{% url 'flush' record.uuid %}\">FLUSH</a>"
+
 logs_column_template = "<a href=\"{% url 'logs' record.uuid %}\">LOGS</a>"
 
 
@@ -32,4 +34,5 @@ class ProcessTable(tables.Table):
     exit_code = tables.Column(verbose_name="Exit Code")
     logs = tables.TemplateColumn(logs_column_template, verbose_name="Logs")
     restart = tables.TemplateColumn(restart_column_template, verbose_name="Restart")
+    flush = tables.TemplateColumn(flush_column_template, verbose_name="Flush")
     kill = tables.TemplateColumn(kill_column_template, verbose_name="Kill")
