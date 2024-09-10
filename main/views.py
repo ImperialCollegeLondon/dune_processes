@@ -1,10 +1,11 @@
 """Views for the main app."""
 
 import asyncio
-import logging
+import uuid
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from drunc.process_manager.process_manager_driver import ProcessManagerDriver
 from drunc.utils.shell_utils import create_dummy_token_from_uname
 from druncschema.process_manager_pb2 import (
@@ -67,7 +68,7 @@ async def _restart_process_call(uuid: str) -> None:
     await pmd.restart(query)
 
 
-def restart_process(request: HttpRequest, uuid: str) -> HttpResponse:
+def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Restart the process associated to the given uuid.
 
     Args:
@@ -78,6 +79,5 @@ def restart_process(request: HttpRequest, uuid: str) -> HttpResponse:
     Returns:
         HttpResponse, redirecting to the main page.
     """
-    logging.warning(f"Restarting process with UUID: {uuid}")
-    asyncio.run(_restart_process_call(uuid))
-    return HttpResponseRedirect("/")
+    asyncio.run(_restart_process_call(str(uuid)))
+    return HttpResponseRedirect(reverse("index"))
