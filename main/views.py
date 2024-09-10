@@ -3,6 +3,7 @@
 import asyncio
 import uuid
 
+import django_tables2
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -37,11 +38,11 @@ def index(request: HttpRequest) -> HttpResponse:
 
     status_enum_lookup = dict(item[::-1] for item in ProcessInstance.StatusCode.items())
 
-    table = []
+    table_data = []
     process_instances = val.data.values
     for process_instance in process_instances:
         metadata = process_instance.process_description.metadata
-        table.append(
+        table_data.append(
             {
                 "uuid": process_instance.uuid.uuid,
                 "name": metadata.name,
@@ -52,7 +53,13 @@ def index(request: HttpRequest) -> HttpResponse:
             }
         )
 
-    context = {"table": ProcessTable(table)}
+    table = ProcessTable(table_data)
+
+    # sort table data based on request parameters
+    table_configurator = django_tables2.RequestConfig(request)
+    table_configurator.configure(table)
+
+    context = {"table": table}
 
     return render(request=request, context=context, template_name="main/index.html")
 
