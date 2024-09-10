@@ -18,6 +18,8 @@ kill_column_template = (
     )
 )
 
+logs_column_template = "<a href=\"{% url 'logs' record.uuid %}\">LOGS</a>"
+
 
 class ProcessTable(tables.Table):
     """Defines and Process Table for the data from the Process Manager."""
@@ -28,5 +30,6 @@ class ProcessTable(tables.Table):
     session = tables.Column(verbose_name="Session")
     status_code = tables.Column(verbose_name="Status Code")
     exit_code = tables.Column(verbose_name="Exit Code")
+    logs = tables.TemplateColumn(logs_column_template, verbose_name="Logs")
     restart = tables.TemplateColumn(restart_column_template, verbose_name="Restart")
     kill = tables.TemplateColumn(kill_column_template, verbose_name="Kill")
