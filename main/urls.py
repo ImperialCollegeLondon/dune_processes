@@ -6,5 +6,9 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("restart/<str:uuid>/", views.restart_process, name="restart"),
+    path(
+        "restart/<str:uuid>/<str:user>/<str:session>",
+        views.restart_process,
+        name="restart",
+    ),
 ]

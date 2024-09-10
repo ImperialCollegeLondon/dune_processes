@@ -50,12 +50,16 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request=request, context=context, template_name="main/index.html")
 
 
-def restart_process(request: HttpRequest, uuid: str) -> HttpResponse:
+def restart_process(
+    request: HttpRequest, uuid: str, user: str, session: str
+) -> HttpResponse:
     """Restart the process associated to the given uuid.
 
     Args:
         request: HttpRequest object.
         uuid: UUID of the process to be restarted.
+        user: User of the process to be restarted.
+        session: Session of the process to be restarted.
 
     Returns:
         HttpResponse, redirecting to the main page.
