@@ -58,7 +58,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
 
 async def _restart_process_call(uuid: str) -> None:
-    """Get info about all sessions from process manager.
+    """Restart a process with a given UUID.
 
     Args:
         uuid: UUID of the process to be restarted.
