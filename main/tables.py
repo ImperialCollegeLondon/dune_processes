@@ -13,6 +13,6 @@ class ProcessTable(tables.Table):
     status_code = tables.Column(verbose_name="Status Code")
     exit_code = tables.Column(verbose_name="Exit Code")
     restart = tables.TemplateColumn(
-        "<a href=\"{% url 'restart' record.uuid record.user record.session%}\" onclick=\"return confirm('You are about to restart process {{record.uuid}}. Are you sure?')\">RESTART</a>",  # noqa: E501
+        "<a href=\"{% url 'restart' record.uuid%}\" onclick=\"return confirm('You are about to restart process {{record.uuid}}. Are you sure?')\">RESTART</a>",  # noqa: E501
         verbose_name="",
     )

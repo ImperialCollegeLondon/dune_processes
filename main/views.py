@@ -11,15 +11,21 @@ from druncschema.process_manager_pb2 import (
     ProcessInstance,
     ProcessInstanceList,
     ProcessQuery,
+    ProcessUUID,
 )
 
 from .tables import ProcessTable
 
 
+def get_process_manager_driver() -> ProcessManagerDriver:
+    """Get a ProcessManagerDriver instance."""
+    token = create_dummy_token_from_uname()
+    return ProcessManagerDriver("drunc:10054", token=token, aio_channel=True)
+
+
 async def get_session_info() -> ProcessInstanceList:
     """Get info about all sessions from process manager."""
-    token = create_dummy_token_from_uname()
-    pmd = ProcessManagerDriver("drunc:10054", token=token, aio_channel=True)
+    pmd = get_process_manager_driver()
     query = ProcessQuery(names=[".*"])
     return await pmd.ps(query)
 
@@ -50,19 +56,24 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request=request, context=context, template_name="main/index.html")
 
 
-def restart_process(
-    request: HttpRequest, uuid: str, user: str, session: str
-) -> HttpResponse:
+async def _restart_process_call(uuid: str) -> None:
+    """Get info about all sessions from process manager."""
+    pmd = get_process_manager_driver()
+    query = ProcessQuery(uuids=[ProcessUUID(uuid=uuid)])
+    await pmd.restart(query)
+
+
+def restart_process(request: HttpRequest, uuid: str) -> HttpResponse:
     """Restart the process associated to the given uuid.
 
     Args:
-        request: HttpRequest object.
+        request: HttpRequest object. This is not used in the function, but is required
+            by Django.
         uuid: UUID of the process to be restarted.
-        user: User of the process to be restarted.
-        session: Session of the process to be restarted.
 
     Returns:
         HttpResponse, redirecting to the main page.
     """
     logging.warning(f"Restarting process with UUID: {uuid}")
+    asyncio.run(_restart_process_call(uuid))
     return HttpResponseRedirect("/")
