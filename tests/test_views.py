@@ -40,3 +40,12 @@ def test_process_flush(client, mocker):
     assert response.status_code == 302
     assert response.url == reverse("index")
     mock.assert_called_once_with(str(uuid), ProcessAction.FLUSH)
+
+
+def test_boot_process_get(client):
+    """Test the get request for the BootProcess view."""
+    with assertTemplateUsed(template_name="main/boot_process.html"):
+        response = client.get(reverse("boot_process"))
+    assert response.status_code == 200
+
+    assert "form" in response.context
