@@ -65,9 +65,12 @@ class TestBootProcess:
 
         assert "form" in response.context
 
-    def test_boot_process_post_valid(self, client, dummy_session_data):
+    def test_boot_process_post_valid(self, client, mocker, dummy_session_data):
         """Test the POST request for the BootProcess view."""
+        mock = mocker.patch("main.views._boot_process")
         response = client.post(reverse("main:boot_process"), data=dummy_session_data)
         assert response.status_code == HTTPStatus.FOUND
 
         assert response.url == reverse("main:index")
+
+        mock.assert_called_once_with("root", dummy_session_data)
