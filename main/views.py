@@ -127,6 +127,7 @@ def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     return HttpResponseRedirect(reverse("index"))
 
 
+@login_required
 def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Flush the process associated to the given UUID.
 

@@ -30,8 +30,6 @@ def test_logs(auth_client, mocker):
     mock = mocker.patch("main.views._get_process_logs")
 
     uuid = uuid4()
-
-    # Test with an authenticated client.
     with assertTemplateUsed(template_name="main/logs.html"):
         response = auth_client.get(reverse("logs", kwargs=dict(uuid=uuid)))
     assert response.status_code == 200
@@ -40,12 +38,12 @@ def test_logs(auth_client, mocker):
     assert "log_text" in response.context
 
 
-def test_process_flush(client, mocker):
+def test_process_flush(auth_client, mocker):
     """Test the process_flush view."""
     mock = mocker.patch("main.views._process_call")
 
     uuid = uuid4()
-    response = client.get(reverse("flush", kwargs=dict(uuid=uuid)))
+    response = auth_client.get(reverse("flush", kwargs=dict(uuid=uuid)))
 
     assert response.status_code == 302
     assert response.url == reverse("index")
