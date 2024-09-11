@@ -3,7 +3,7 @@
 from django import forms
 
 
-class BootForm(forms.Form):
+class BootProcessForm(forms.Form):
     """Form for booting processes."""
 
     session_name = forms.CharField()

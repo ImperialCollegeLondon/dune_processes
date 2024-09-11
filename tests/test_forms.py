@@ -1,11 +1,11 @@
 from django import forms
 
-from main.forms import BootForm
+from main.forms import BootProcessForm
 
 
 def test_boot_form_empty():
     """Test for the BootForm."""
-    form = BootForm()
+    form = BootProcessForm()
     assert not form.is_bound
     assert len(form.fields) == 4
     assert type(form.fields["session_name"]) is forms.CharField
@@ -16,14 +16,14 @@ def test_boot_form_empty():
 
 def test_boot_form_with_data(dummy_session_data):
     """Test for the BootForm."""
-    form = BootForm(data=dict())
+    form = BootProcessForm(data=dict())
     assert form.is_bound
     assert not form.is_valid()
     assert len(form.errors) == 4
     for message in form.errors.values():
         assert message == ["This field is required."]
 
-    form = BootForm(data=dummy_session_data)
+    form = BootProcessForm(data=dummy_session_data)
     assert form.is_bound
     assert form.is_valid()
     assert form.cleaned_data["session_name"] == "sess_name"

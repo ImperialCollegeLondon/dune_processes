@@ -19,7 +19,7 @@ from druncschema.process_manager_pb2 import (
     ProcessUUID,
 )
 
-from .forms import BootForm
+from .forms import BootProcessForm
 from .tables import ProcessTable
 
 
@@ -169,9 +169,9 @@ def logs(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     return render(request=request, context=context, template_name="main/logs.html")
 
 
-class BootProcessView(FormView):
+class BootProcessView(FormView):  # type: ignore [type-arg]
     """View for the BootProcess form."""
 
     template_name = "main/boot_process.html"
-    form_class = BootForm
+    form_class = BootProcessForm
     success_url = reverse_lazy("index")
