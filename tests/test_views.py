@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from uuid import uuid4
 
+import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertContains, assertTemplateUsed
 
@@ -74,3 +75,16 @@ class TestBootProcess:
         assert response.url == reverse("main:index")
 
         mock.assert_called_once_with("root", dummy_session_data)
+
+
+@pytest.mark.asyncio
+async def test_boot_process(mocker, dummy_session_data):
+    """Test the _boot_process function."""
+    from main.views import _boot_process
+
+    mock = mocker.patch("main.views.get_process_manager_driver")
+    await _boot_process("root", dummy_session_data)
+    mock.assert_called_once()
+    mock.return_value.dummy_boot.assert_called_once_with(
+        user="root", **dummy_session_data
+    )
