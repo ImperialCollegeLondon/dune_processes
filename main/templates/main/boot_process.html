@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<form action="/your-name/" method="post">
+<form action="{% url 'main:boot_process' %}" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit">
