@@ -5,6 +5,7 @@ import uuid
 from enum import Enum
 
 import django_tables2
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -91,6 +92,7 @@ async def _process_call(uuid: str, action: ProcessAction) -> None:
             await pmd.kill(query)
 
 
+@login_required
 def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Restart the process associated to the given UUID.
 
@@ -106,6 +108,7 @@ def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     return HttpResponseRedirect(reverse("index"))
 
 
+@login_required
 def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Kill the process associated to the given UUID.
 
@@ -135,6 +138,7 @@ async def _get_process_logs(uuid: str) -> list[DecodedResponse]:
     return [item async for item in pmd.logs(request)]
 
 
+@login_required
 def logs(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Display the logs of a process.
 
