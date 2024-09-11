@@ -12,6 +12,8 @@ services:
     volumes:
       - .:/usr/src/app
       - db:/usr/src/app/db
+    environment:
+      - PROCESS_MANAGER_URL=drunc:10054
   drunc:
     build: ./drunc_docker_service/
     command:

@@ -9,6 +9,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -133,3 +134,5 @@ AUTH_USER_MODEL = "main.User"
 
 INSTALLED_APPS += ["django_bootstrap5"]
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
+
+PROCESS_MANAGER_URL = os.getenv("PROCESS_MANAGER_URL", "localhost:10054")

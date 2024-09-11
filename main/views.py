@@ -6,6 +6,7 @@ from enum import Enum
 from http import HTTPStatus
 
 import django_tables2
+from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -34,7 +35,9 @@ MESSAGES: list[str] = []
 def get_process_manager_driver() -> ProcessManagerDriver:
     """Get a ProcessManagerDriver instance."""
     token = create_dummy_token_from_uname()
-    return ProcessManagerDriver("drunc:10054", token=token, aio_channel=True)
+    return ProcessManagerDriver(
+        settings.PROCESS_MANAGER_URL, token=token, aio_channel=True
+    )
 
 
 async def get_session_info() -> ProcessInstanceList:
