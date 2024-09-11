@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm AS python
+FROM python:3.11-slim-bookworm AS python
 
 FROM python AS build
 
@@ -10,7 +10,7 @@ RUN /root/.local/bin/poetry config virtualenvs.create false && \
 
 FROM python
 
-COPY --from=build /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=build /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 EXPOSE 8000
 COPY --chown=nobody:nogroup . /usr/src/app
 WORKDIR /usr/src/app
