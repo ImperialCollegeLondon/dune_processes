@@ -35,6 +35,7 @@ async def get_session_info() -> ProcessInstanceList:
     return await pmd.ps(query)
 
 
+@login_required
 def index(request: HttpRequest) -> HttpResponse:
     """View that renders the index/home page."""
     val = asyncio.run(get_session_info())
