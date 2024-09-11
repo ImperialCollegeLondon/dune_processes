@@ -176,7 +176,9 @@ async def _boot_process(user: str, data: dict[str, str | int]) -> None:
         user: the user to boot the process as.
         data: the data for the process.
     """
-    pass
+    pmd = get_process_manager_driver()
+    async for item in pmd.dummy_boot(user=user, **data):
+        pass
 
 
 class BootProcessView(FormView):  # type: ignore [type-arg]
