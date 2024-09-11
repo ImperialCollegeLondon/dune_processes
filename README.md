@@ -53,3 +53,25 @@ docker compose exec app python scripts/talk_to_process_manager.py
 ```
 
 Take the servers down with `docker compose down`
+
+### Working with Kafka
+
+Due to the complexities of containerising Kafka it is not possible to use the standard
+Docker Compose setup. Instead when working with functionality that requires Kafka it is
+necessary to run the individual components manually.
+
+1. Start the drunc shell:
+   `poetry run drunc-unified-shell --log-level debug ./data/process-manager-pocket-kafka.json`
+
+1. Start Kafka - See [Running drunc with pocket kafka].
+
+1. Start the application server:
+   `poetry run python manage.py runserver`
+
+1. Start the Kafka consumer:
+   `poetry run python scripts/kafka_consumer.py`
+
+From here you should be able to see broadcast messages displayed at the top of the index
+page on every refresh.
+
+[Running drunc with pocket kafka]: https://github.com/DUNE-DAQ/drunc/wiki/Running-drunc-with-pocket-kafka
