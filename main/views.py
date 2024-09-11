@@ -169,9 +169,31 @@ def logs(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     return render(request=request, context=context, template_name="main/logs.html")
 
 
+async def _boot_process(user: str, data: dict[str, str | int]) -> None:
+    """Boot a process with the given data.
+
+    Args:
+        user: the user to boot the process as.
+        data: the data for the process.
+    """
+    pass
+
+
 class BootProcessView(FormView):  # type: ignore [type-arg]
     """View for the BootProcess form."""
 
     template_name = "main/boot_process.html"
     form_class = BootProcessForm
     success_url = reverse_lazy("main:index")
+
+    def form_valid(self, form: BootProcessForm) -> HttpResponse:
+        """Boot a Process when valid form data has been POSTed.
+
+        Args:
+            form: the form instance that has been validated.
+
+        Returns:
+            A redirect to the index page.
+        """
+        asyncio.run(_boot_process("root", form.cleaned_data))
+        return super().form_valid(form)
