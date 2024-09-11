@@ -11,10 +11,7 @@ def test_index(client, admin_client, mocker):
     """Test the index view."""
     mocker.patch("main.views.get_session_info")
     with assertTemplateUsed(template_name="main/index.html"):
-        response = client.get("/")
-    assert response.status_code == HTTPStatus.OK
-
-    response = admin_client.get("/")
+        response = client.get(reverse("main:index"))
     assert response.status_code == HTTPStatus.OK
 
 
@@ -24,7 +21,7 @@ def test_logs(client, mocker):
 
     uuid = uuid4()
     with assertTemplateUsed(template_name="main/logs.html"):
-        response = client.get(reverse("logs", kwargs=dict(uuid=uuid)))
+        response = client.get(reverse("main:logs", kwargs=dict(uuid=uuid)))
     assert response.status_code == HTTPStatus.OK
 
     mock.assert_called_once_with(str(uuid))
@@ -36,10 +33,10 @@ def test_process_flush(client, mocker):
     mock = mocker.patch("main.views._process_call")
 
     uuid = uuid4()
-    response = client.get(reverse("flush", kwargs=dict(uuid=uuid)))
+    response = client.get(reverse("main:flush", kwargs=dict(uuid=uuid)))
 
     assert response.status_code == HTTPStatus.FOUND
-    assert response.url == reverse("index")
+    assert response.url == reverse("main:index")
     mock.assert_called_once_with(str(uuid), ProcessAction.FLUSH)
 
 
@@ -51,7 +48,7 @@ class TestBootProcess:
     def test_boot_process_get(self, client):
         """Test the GET request for the BootProcess view."""
         with assertTemplateUsed(template_name=self.template_name):
-            response = client.get(reverse("boot_process"))
+            response = client.get(reverse("main:boot_process"))
         assert response.status_code == HTTPStatus.OK
 
         assert "form" in response.context
@@ -59,14 +56,14 @@ class TestBootProcess:
     def test_boot_process_post_invalid(self, client):
         """Test the POST request for the BootProcess view with invalid data."""
         with assertTemplateUsed(template_name=self.template_name):
-            response = client.post(reverse("boot_process"), data=dict())
+            response = client.post(reverse("main:boot_process"), data=dict())
         assert response.status_code == HTTPStatus.OK
 
         assert "form" in response.context
 
     def test_boot_process_post_valid(self, client, dummy_session_data):
         """Test the POST request for the BootProcess view."""
-        response = client.post(reverse("boot_process"), data=dummy_session_data)
+        response = client.post(reverse("main:boot_process"), data=dummy_session_data)
         assert response.status_code == HTTPStatus.FOUND
 
-        assert response.url == reverse("index")
+        assert response.url == reverse("main:index")

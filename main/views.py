@@ -108,7 +108,7 @@ def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
         HttpResponse, redirecting to the main page.
     """
     asyncio.run(_process_call(str(uuid), ProcessAction.RESTART))
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("main:index"))
 
 
 def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
@@ -122,7 +122,7 @@ def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
         HttpResponse redirecting to the index page.
     """
     asyncio.run(_process_call(str(uuid), ProcessAction.KILL))
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("main:index"))
 
 
 def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
@@ -136,7 +136,7 @@ def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
         HttpResponse redirecting to the index page.
     """
     asyncio.run(_process_call(str(uuid), ProcessAction.FLUSH))
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("main:index"))
 
 
 async def _get_process_logs(uuid: str) -> list[DecodedResponse]:
@@ -174,4 +174,4 @@ class BootProcessView(FormView):  # type: ignore [type-arg]
 
     template_name = "main/boot_process.html"
     form_class = BootProcessForm
-    success_url = reverse_lazy("index")
+    success_url = reverse_lazy("main:index")
