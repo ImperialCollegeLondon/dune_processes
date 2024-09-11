@@ -2,7 +2,7 @@ from http import HTTPStatus
 from uuid import uuid4
 
 from django.urls import reverse
-from pytest_django.asserts import assertTemplateUsed
+from pytest_django.asserts import assertContains, assertTemplateUsed
 
 from main.views import ProcessAction
 
@@ -13,6 +13,9 @@ def test_index(client, admin_client, mocker):
     with assertTemplateUsed(template_name="main/index.html"):
         response = client.get(reverse("main:index"))
     assert response.status_code == HTTPStatus.OK
+
+    assert "table" in response.context
+    assertContains(response, "Boot</a>")
 
 
 def test_logs(client, mocker):
