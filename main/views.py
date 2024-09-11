@@ -74,6 +74,7 @@ class ProcessAction(Enum):
 
     RESTART = "restart"
     KILL = "kill"
+    FLUSH = "flush"
 
 
 async def _process_call(uuid: str, action: ProcessAction) -> None:
@@ -91,6 +92,8 @@ async def _process_call(uuid: str, action: ProcessAction) -> None:
             await pmd.restart(query)
         case ProcessAction.KILL:
             await pmd.kill(query)
+        case ProcessAction.FLUSH:
+            await pmd.flush(query)
 
 
 @login_required
@@ -121,6 +124,20 @@ def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
         HttpResponse redirecting to the index page.
     """
     asyncio.run(_process_call(str(uuid), ProcessAction.KILL))
+    return HttpResponseRedirect(reverse("index"))
+
+
+def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
+    """Flush the process associated to the given UUID.
+
+    Args:
+        request: Django HttpRequest object (unused, but required by Django).
+        uuid: UUID of the process to be flushed.
+
+    Returns:
+        HttpResponse redirecting to the index page.
+    """
+    asyncio.run(_process_call(str(uuid), ProcessAction.FLUSH))
     return HttpResponseRedirect(reverse("index"))
 
 

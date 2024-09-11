@@ -3,6 +3,8 @@ from uuid import uuid4
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
+from main.views import ProcessAction
+
 
 def test_index(client, auth_client, admin_client, mocker):
     """Test the index view."""
@@ -36,3 +38,15 @@ def test_logs(auth_client, mocker):
 
     mock.assert_called_once_with(str(uuid))
     assert "log_text" in response.context
+
+
+def test_process_flush(client, mocker):
+    """Test the process_flush view."""
+    mock = mocker.patch("main.views._process_call")
+
+    uuid = uuid4()
+    response = client.get(reverse("flush", kwargs=dict(uuid=uuid)))
+
+    assert response.status_code == 302
+    assert response.url == reverse("index")
+    mock.assert_called_once_with(str(uuid), ProcessAction.FLUSH)
