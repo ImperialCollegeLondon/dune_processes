@@ -1,7 +1,9 @@
+from http import HTTPStatus
 from uuid import uuid4
 
+import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertTemplateUsed
+from pytest_django.asserts import assertContains, assertTemplateUsed
 
 from main.views import ProcessAction
 
@@ -10,11 +12,11 @@ def test_index(client, admin_client, mocker):
     """Test the index view."""
     mocker.patch("main.views.get_session_info")
     with assertTemplateUsed(template_name="main/index.html"):
-        response = client.get("/")
-    assert response.status_code == 200
+        response = client.get(reverse("main:index"))
+    assert response.status_code == HTTPStatus.OK
 
-    response = admin_client.get("/")
-    assert response.status_code == 200
+    assert "table" in response.context
+    assertContains(response, "Boot</a>")
 
 
 def test_logs(client, mocker):
@@ -23,8 +25,8 @@ def test_logs(client, mocker):
 
     uuid = uuid4()
     with assertTemplateUsed(template_name="main/logs.html"):
-        response = client.get(reverse("logs", kwargs=dict(uuid=uuid)))
-    assert response.status_code == 200
+        response = client.get(reverse("main:logs", kwargs=dict(uuid=uuid)))
+    assert response.status_code == HTTPStatus.OK
 
     mock.assert_called_once_with(str(uuid))
     assert "log_text" in response.context
@@ -35,8 +37,54 @@ def test_process_flush(client, mocker):
     mock = mocker.patch("main.views._process_call")
 
     uuid = uuid4()
-    response = client.get(reverse("flush", kwargs=dict(uuid=uuid)))
+    response = client.get(reverse("main:flush", kwargs=dict(uuid=uuid)))
 
-    assert response.status_code == 302
-    assert response.url == reverse("index")
+    assert response.status_code == HTTPStatus.FOUND
+    assert response.url == reverse("main:index")
     mock.assert_called_once_with(str(uuid), ProcessAction.FLUSH)
+
+
+class TestBootProcess:
+    """Grouping the tests for the BootProcess view."""
+
+    template_name = "main/boot_process.html"
+
+    def test_boot_process_get(self, client):
+        """Test the GET request for the BootProcess view."""
+        with assertTemplateUsed(template_name=self.template_name):
+            response = client.get(reverse("main:boot_process"))
+        assert response.status_code == HTTPStatus.OK
+
+        assert "form" in response.context
+        assertContains(response, f'form action="{reverse("main:boot_process")}"')
+
+    def test_boot_process_post_invalid(self, client):
+        """Test the POST request for the BootProcess view with invalid data."""
+        with assertTemplateUsed(template_name=self.template_name):
+            response = client.post(reverse("main:boot_process"), data=dict())
+        assert response.status_code == HTTPStatus.OK
+
+        assert "form" in response.context
+
+    def test_boot_process_post_valid(self, client, mocker, dummy_session_data):
+        """Test the POST request for the BootProcess view."""
+        mock = mocker.patch("main.views._boot_process")
+        response = client.post(reverse("main:boot_process"), data=dummy_session_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        assert response.url == reverse("main:index")
+
+        mock.assert_called_once_with("root", dummy_session_data)
+
+
+@pytest.mark.asyncio
+async def test_boot_process(mocker, dummy_session_data):
+    """Test the _boot_process function."""
+    from main.views import _boot_process
+
+    mock = mocker.patch("main.views.get_process_manager_driver")
+    await _boot_process("root", dummy_session_data)
+    mock.assert_called_once()
+    mock.return_value.dummy_boot.assert_called_once_with(
+        user="root", **dummy_session_data
+    )

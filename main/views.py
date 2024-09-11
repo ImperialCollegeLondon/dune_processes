@@ -7,7 +7,8 @@ from enum import Enum
 import django_tables2
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.views.generic.edit import FormView
 from drunc.process_manager.process_manager_driver import ProcessManagerDriver
 from drunc.utils.shell_utils import DecodedResponse, create_dummy_token_from_uname
 from druncschema.process_manager_pb2 import (
@@ -18,6 +19,7 @@ from druncschema.process_manager_pb2 import (
     ProcessUUID,
 )
 
+from .forms import BootProcessForm
 from .tables import ProcessTable
 
 
@@ -106,7 +108,7 @@ def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
         HttpResponse, redirecting to the main page.
     """
     asyncio.run(_process_call(str(uuid), ProcessAction.RESTART))
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("main:index"))
 
 
 def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
@@ -120,7 +122,7 @@ def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
         HttpResponse redirecting to the index page.
     """
     asyncio.run(_process_call(str(uuid), ProcessAction.KILL))
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("main:index"))
 
 
 def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
@@ -134,7 +136,7 @@ def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
         HttpResponse redirecting to the index page.
     """
     asyncio.run(_process_call(str(uuid), ProcessAction.FLUSH))
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("main:index"))
 
 
 async def _get_process_logs(uuid: str) -> list[DecodedResponse]:
@@ -165,3 +167,35 @@ def logs(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     logs_response = asyncio.run(_get_process_logs(str(uuid)))
     context = dict(log_text="\n".join(val.data.line for val in logs_response))
     return render(request=request, context=context, template_name="main/logs.html")
+
+
+async def _boot_process(user: str, data: dict[str, str | int]) -> None:
+    """Boot a process with the given data.
+
+    Args:
+        user: the user to boot the process as.
+        data: the data for the process.
+    """
+    pmd = get_process_manager_driver()
+    async for item in pmd.dummy_boot(user=user, **data):
+        pass
+
+
+class BootProcessView(FormView):  # type: ignore [type-arg]
+    """View for the BootProcess form."""
+
+    template_name = "main/boot_process.html"
+    form_class = BootProcessForm
+    success_url = reverse_lazy("main:index")
+
+    def form_valid(self, form: BootProcessForm) -> HttpResponse:
+        """Boot a Process when valid form data has been POSTed.
+
+        Args:
+            form: the form instance that has been validated.
+
+        Returns:
+            A redirect to the index page.
+        """
+        asyncio.run(_boot_process("root", form.cleaned_data))
+        return super().form_valid(form)

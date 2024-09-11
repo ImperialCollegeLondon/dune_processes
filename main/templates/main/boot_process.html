@@ -1,0 +1,13 @@
+{% extends "main/base.html" %}
+
+{% block title %}Boot Process{% endblock title %}
+
+{% block content %}
+
+<form action="{% url 'main:boot_process' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock content %}

@@ -15,6 +15,7 @@ drunc = { git = "https://github.com/DUNE-DAQ/drunc.git" }
 druncschema = { git = "https://github.com/DUNE-DAQ/druncschema.git" }
 django-tables2 = "^2.7.0"
 django-bootstrap5 = "^24.2"
+pytest-asyncio = "^0.24.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2"
@@ -53,6 +54,7 @@ django_settings_module = "dune_processes.settings"
 [tool.pytest.ini_options]
 addopts = "-v --mypy -p no:warnings --cov=dune_processes --cov-report=html --doctest-modules --ignore=manage.py --ignore=dune_processes/settings/"
 DJANGO_SETTINGS_MODULE = "dune_processes.settings"
+FAIL_INVALID_TEMPLATE_VARS = true
 
 [tool.ruff]
 exclude = ["main/migrations"]
