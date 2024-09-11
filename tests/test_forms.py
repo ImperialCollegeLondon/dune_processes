@@ -14,7 +14,7 @@ def test_boot_form_empty():
     assert type(form.fields["n_sleeps"]) is forms.IntegerField
 
 
-def test_boot_form_with_data():
+def test_boot_form_with_data(dummy_session_data):
     """Test for the BootForm."""
     form = BootForm(data=dict())
     assert form.is_bound
@@ -23,9 +23,7 @@ def test_boot_form_with_data():
     for message in form.errors.values():
         assert message == ["This field is required."]
 
-    form = BootForm(
-        data=dict(session_name="sess_name", n_processes=1, sleep=5, n_sleeps=4)
-    )
+    form = BootForm(data=dummy_session_data)
     assert form.is_bound
     assert form.is_valid()
     assert form.cleaned_data["session_name"] == "sess_name"

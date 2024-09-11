@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from uuid import uuid4
 
 from django.urls import reverse
@@ -11,10 +12,10 @@ def test_index(client, admin_client, mocker):
     mocker.patch("main.views.get_session_info")
     with assertTemplateUsed(template_name="main/index.html"):
         response = client.get("/")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
     response = admin_client.get("/")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
 
 def test_logs(client, mocker):
@@ -24,7 +25,7 @@ def test_logs(client, mocker):
     uuid = uuid4()
     with assertTemplateUsed(template_name="main/logs.html"):
         response = client.get(reverse("logs", kwargs=dict(uuid=uuid)))
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
     mock.assert_called_once_with(str(uuid))
     assert "log_text" in response.context
@@ -37,15 +38,35 @@ def test_process_flush(client, mocker):
     uuid = uuid4()
     response = client.get(reverse("flush", kwargs=dict(uuid=uuid)))
 
-    assert response.status_code == 302
+    assert response.status_code == HTTPStatus.FOUND
     assert response.url == reverse("index")
     mock.assert_called_once_with(str(uuid), ProcessAction.FLUSH)
 
 
-def test_boot_process_get(client):
-    """Test the get request for the BootProcess view."""
-    with assertTemplateUsed(template_name="main/boot_process.html"):
-        response = client.get(reverse("boot_process"))
-    assert response.status_code == 200
+class TestBootProcess:
+    """Grouping the tests for the BootProcess view."""
 
-    assert "form" in response.context
+    template_name = "main/boot_process.html"
+
+    def test_boot_process_get(self, client):
+        """Test the GET request for the BootProcess view."""
+        with assertTemplateUsed(template_name=self.template_name):
+            response = client.get(reverse("boot_process"))
+        assert response.status_code == HTTPStatus.OK
+
+        assert "form" in response.context
+
+    def test_boot_process_post_invalid(self, client):
+        """Test the POST request for the BootProcess view with invalid data."""
+        with assertTemplateUsed(template_name=self.template_name):
+            response = client.post(reverse("boot_process"), data=dict())
+        assert response.status_code == HTTPStatus.OK
+
+        assert "form" in response.context
+
+    def test_boot_process_post_valid(self, client, dummy_session_data):
+        """Test the POST request for the BootProcess view."""
+        response = client.post(reverse("boot_process"), data=dummy_session_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        assert response.url == reverse("index")
