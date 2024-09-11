@@ -131,5 +131,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 AUTH_USER_MODEL = "main.User"
 
+LOGIN_URL = "/accounts/login"
+LOGIN_REDIRECT_URL = "index"
+
 INSTALLED_APPS += ["django_bootstrap5"]
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
