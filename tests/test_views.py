@@ -55,6 +55,7 @@ class TestBootProcess:
         assert response.status_code == HTTPStatus.OK
 
         assert "form" in response.context
+        assertContains(response, f'form action="{reverse("main:boot_process")}"')
 
     def test_boot_process_post_invalid(self, client):
         """Test the POST request for the BootProcess view with invalid data."""
