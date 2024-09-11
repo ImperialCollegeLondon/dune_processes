@@ -4,24 +4,34 @@ from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
 
-def test_index(client, admin_client, mocker):
+def test_index(client, auth_client, admin_client, mocker):
     """Test the index view."""
     mocker.patch("main.views.get_session_info")
+
+    # Test with an anonymous client.
+    response = client.get("/")
+    assert response.status_code == 302
+
+    # Test with an authenticated client.
     with assertTemplateUsed(template_name="main/index.html"):
-        response = client.get("/")
+        response = auth_client.get("/")
     assert response.status_code == 200
 
-    response = admin_client.get("/")
+    # Test with an admin client.
+    with assertTemplateUsed(template_name="main/index.html"):
+        response = admin_client.get("/")
     assert response.status_code == 200
 
 
-def test_logs(client, mocker):
+def test_logs(auth_client, mocker):
     """Test the logs view."""
     mock = mocker.patch("main.views._get_process_logs")
 
     uuid = uuid4()
+
+    # Test with an authenticated client.
     with assertTemplateUsed(template_name="main/logs.html"):
-        response = client.get(reverse("logs", kwargs=dict(uuid=uuid)))
+        response = auth_client.get(reverse("logs", kwargs=dict(uuid=uuid)))
     assert response.status_code == 200
 
     mock.assert_called_once_with(str(uuid))
