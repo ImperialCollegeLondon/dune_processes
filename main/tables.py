@@ -18,8 +18,6 @@ kill_column_template = (
     )
 )
 
-flush_column_template = "<a href=\"{% url 'flush' record.uuid %}\">FLUSH</a>"
-
 flush_column_template = "<a href=\"{% url 'main:flush' record.uuid %}\">FLUSH</a>"
 
 logs_column_template = "<a href=\"{% url 'main:logs' record.uuid %}\">LOGS</a>"
