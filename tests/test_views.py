@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertContains, assertTemplateUsed
+from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
 from main.views import ProcessAction
 
@@ -15,6 +15,7 @@ def test_index(client, auth_client, admin_client, mocker):
     # Test with an anonymous client.
     response = client.get(reverse("main:index"))
     assert response.status_code == HTTPStatus.FOUND
+    assertRedirects(response, "/accounts/login/?next=/")
 
     # Test with an authenticated client.
     with assertTemplateUsed(template_name="main/index.html"):
