@@ -6,6 +6,7 @@ from enum import Enum
 
 import django_tables2
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -187,7 +188,7 @@ async def _boot_process(user: str, data: dict[str, str | int]) -> None:
         pass
 
 
-class BootProcessView(FormView):  # type: ignore [type-arg]
+class BootProcessView(LoginRequiredMixin, FormView):  # type: ignore [type-arg]
     """View for the BootProcess form."""
 
     template_name = "main/boot_process.html"
