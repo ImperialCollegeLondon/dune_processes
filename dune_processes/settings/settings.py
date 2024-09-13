@@ -133,6 +133,7 @@ AUTH_USER_MODEL = "main.User"
 
 LOGIN_URL = "main:login"
 LOGIN_REDIRECT_URL = "main:index"
+LOGOUT_REDIRECT_URL = "main:login"
 
 INSTALLED_APPS += ["django_bootstrap5"]
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
