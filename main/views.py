@@ -5,6 +5,8 @@ import uuid
 from enum import Enum
 
 import django_tables2
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -36,6 +38,7 @@ async def get_session_info() -> ProcessInstanceList:
     return await pmd.ps(query)
 
 
+@login_required
 def index(request: HttpRequest) -> HttpResponse:
     """View that renders the index/home page."""
     val = asyncio.run(get_session_info())
@@ -96,6 +99,7 @@ async def _process_call(uuid: str, action: ProcessAction) -> None:
             await pmd.flush(query)
 
 
+@login_required
 def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Restart the process associated to the given UUID.
 
@@ -111,6 +115,7 @@ def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     return HttpResponseRedirect(reverse("main:index"))
 
 
+@login_required
 def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Kill the process associated to the given UUID.
 
@@ -125,6 +130,7 @@ def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     return HttpResponseRedirect(reverse("main:index"))
 
 
+@login_required
 def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Flush the process associated to the given UUID.
 
@@ -154,6 +160,7 @@ async def _get_process_logs(uuid: str) -> list[DecodedResponse]:
     return [item async for item in pmd.logs(request)]
 
 
+@login_required
 def logs(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Display the logs of a process.
 
@@ -181,7 +188,7 @@ async def _boot_process(user: str, data: dict[str, str | int]) -> None:
         pass
 
 
-class BootProcessView(FormView):  # type: ignore [type-arg]
+class BootProcessView(LoginRequiredMixin, FormView):  # type: ignore [type-arg]
     """View for the BootProcess form."""
 
     template_name = "main/boot_process.html"
