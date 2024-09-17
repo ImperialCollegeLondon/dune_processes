@@ -23,6 +23,27 @@ class LoginRequiredTest:
         assert response.url.startswith(reverse("main:login"))
 
 
+class ProcessActionsTest(LoginRequiredTest):
+    """Grouping the tests for the process action views."""
+
+    action: ProcessAction
+
+    @classmethod
+    def setup_class(cls):
+        """Set up the endpoint for the tests."""
+        cls.uuid = uuid4()
+        cls.endpoint = reverse(f"main:{cls.action.value}", kwargs=dict(uuid=cls.uuid))
+
+    def test_process_action_view_authenticated(self, auth_client, mocker):
+        """Test the process action view for an authenticated user."""
+        mock = mocker.patch("main.views._process_call")
+        response = auth_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("main:index")
+
+        mock.assert_called_once_with(str(self.uuid), self.action)
+
+
 class TestIndexView(LoginRequiredTest):
     """Tests for the index view."""
 
@@ -65,23 +86,22 @@ class TestLogsView(LoginRequiredTest):
         assert "log_text" in response.context
 
 
-class TestProcessFlushView(LoginRequiredTest):
+class TestProcessFlushView(ProcessActionsTest):
     """Tests for the process flush view."""
 
-    @classmethod
-    def setup_class(cls):
-        """Set up the endpoint for the tests."""
-        cls.uuid = uuid4()
-        cls.endpoint = reverse("main:flush", kwargs=dict(uuid=cls.uuid))
+    action = ProcessAction.FLUSH
 
-    def test_process_flush_view_authenticated(self, auth_client, mocker):
-        """Test the process flush view for an authenticated user."""
-        mock = mocker.patch("main.views._process_call")
-        response = auth_client.get(self.endpoint)
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("main:index")
 
-        mock.assert_called_once_with(str(self.uuid), ProcessAction.FLUSH)
+class TestProcessKillView(ProcessActionsTest):
+    """Tests for the process kill view."""
+
+    action = ProcessAction.KILL
+
+
+class TestProcessRestartView(ProcessActionsTest):
+    """Tests for the process restart view."""
+
+    action = ProcessAction.RESTART
 
 
 class TestBootProcess:
