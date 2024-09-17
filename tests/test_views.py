@@ -65,22 +65,23 @@ class TestLogsView(LoginRequiredTest):
         assert "log_text" in response.context
 
 
-def test_process_flush(client, auth_client, mocker):
-    """Test the process_flush view."""
-    mock = mocker.patch("main.views._process_call")
+class TestProcessFlushView(LoginRequiredTest):
+    """Tests for the process flush view."""
 
-    uuid = uuid4()
+    @classmethod
+    def setup_class(cls):
+        """Set up the endpoint for the tests."""
+        cls.uuid = uuid4()
+        cls.endpoint = reverse("main:flush", kwargs=dict(uuid=cls.uuid))
 
-    # Test with an anonymous client.
-    response = client.get(reverse("main:flush", kwargs=dict(uuid=uuid)))
-    assert response.status_code == HTTPStatus.FOUND
-    assertRedirects(response, f"/accounts/login/?next=/flush/{uuid}")
+    def test_process_flush_view_authenticated(self, auth_client, mocker):
+        """Test the process flush view for an authenticated user."""
+        mock = mocker.patch("main.views._process_call")
+        response = auth_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("main:index")
 
-    # Test with an authenticated client.
-    response = auth_client.get(reverse("main:flush", kwargs=dict(uuid=uuid)))
-    assert response.status_code == HTTPStatus.FOUND
-    assert response.url == reverse("main:index")
-    mock.assert_called_once_with(str(uuid), ProcessAction.FLUSH)
+        mock.assert_called_once_with(str(self.uuid), ProcessAction.FLUSH)
 
 
 class TestBootProcess:
