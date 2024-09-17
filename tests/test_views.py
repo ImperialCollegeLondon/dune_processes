@@ -8,27 +8,41 @@ from pytest_django.asserts import assertContains, assertRedirects, assertTemplat
 from main.views import ProcessAction
 
 
-def test_index(client, auth_client, admin_client, mocker):
-    """Test the index view."""
-    mocker.patch("main.views.get_session_info")
+class LoginRequiredTest:
+    """Tests for views that require authentication."""
 
-    # Test with an anonymous client.
-    response = client.get(reverse("main:index"))
-    assert response.status_code == HTTPStatus.FOUND
-    assertRedirects(response, "/accounts/login/?next=/")
+    endpoint: str
 
-    # Test with an authenticated client.
-    with assertTemplateUsed(template_name="main/index.html"):
-        response = auth_client.get(reverse("main:index"))
-    assert response.status_code == HTTPStatus.OK
+    def test_login_redirect(self, client):
+        """Test that the view redirects to the login page."""
+        response = client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.FOUND
 
-    # Test with an admin client.
-    with assertTemplateUsed(template_name="main/index.html"):
-        response = admin_client.get(reverse("main:index"))
-    assert response.status_code == HTTPStatus.OK
+        # AssertRedirects try to match the exact URL, but the URL may contain a query
+        # string. So, we just check the start of the URL.
+        assert response.url.startswith(reverse("main:login"))
 
-    assert "table" in response.context
-    assertContains(response, "Boot</a>")
+
+class TestIndexView(LoginRequiredTest):
+    """Tests for the index view."""
+
+    endpoint = reverse("main:index")
+
+    def test_index_view_authenticated(self, auth_client, mocker):
+        """Test the index view for an authenticated user."""
+        mocker.patch("main.views.get_session_info")
+        with assertTemplateUsed(template_name="main/index.html"):
+            response = auth_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_index_view_admin(self, admin_client, mocker):
+        """Test the index view for an admin user."""
+        mocker.patch("main.views.get_session_info")
+        with assertTemplateUsed(template_name="main/index.html"):
+            response = admin_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.OK
+        assert "table" in response.context
+        assertContains(response, "Boot</a>")
 
 
 def test_logs(client, auth_client, mocker):
