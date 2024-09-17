@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
+from pytest_django.asserts import assertContains, assertTemplateUsed
 
 from main.views import ProcessAction
 
@@ -104,10 +104,11 @@ class TestProcessRestartView(ProcessActionsTest):
     action = ProcessAction.RESTART
 
 
-class TestBootProcess:
+class TestBootProcess(LoginRequiredTest):
     """Grouping the tests for the BootProcess view."""
 
     template_name = "main/boot_process.html"
+    endpoint = reverse("main:boot_process")
 
     def test_boot_process_get(self, auth_client):
         """Test the GET request for the BootProcess view."""
@@ -117,12 +118,6 @@ class TestBootProcess:
 
         assert "form" in response.context
         assertContains(response, f'form action="{reverse("main:boot_process")}"')
-
-    def test_boot_process_get_anon(self, client):
-        """Test the GET request for the BootProcess view with an anonymous client."""
-        response = client.get(reverse("main:boot_process"))
-        assert response.status_code == HTTPStatus.FOUND
-        assertRedirects(response, "/accounts/login/?next=/boot_process/")
 
     def test_boot_process_post_invalid(self, auth_client):
         """Test the POST request for the BootProcess view with invalid data."""
