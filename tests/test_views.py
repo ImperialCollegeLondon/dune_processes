@@ -45,24 +45,24 @@ class TestIndexView(LoginRequiredTest):
         assertContains(response, "Boot</a>")
 
 
-def test_logs(client, auth_client, mocker):
-    """Test the logs view."""
-    mock = mocker.patch("main.views._get_process_logs")
+class TestLogsView(LoginRequiredTest):
+    """Tests for the logs view."""
 
-    uuid = uuid4()
+    @classmethod
+    def setup_class(cls):
+        """Set up the endpoint for the tests."""
+        cls.uuid = uuid4()
+        cls.endpoint = reverse("main:logs", kwargs=dict(uuid=cls.uuid))
 
-    # Test with an anonymous client.
-    response = client.get(reverse("main:logs", kwargs=dict(uuid=uuid)))
-    assert response.status_code == HTTPStatus.FOUND
-    assertRedirects(response, f"/accounts/login/?next=/logs/{uuid}")
+    def test_logs_view_authenticated(self, auth_client, mocker):
+        """Test the logs view for an authenticated user."""
+        mock = mocker.patch("main.views._get_process_logs")
+        with assertTemplateUsed(template_name="main/logs.html"):
+            response = auth_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.OK
 
-    # Test with an authenticated client.
-    with assertTemplateUsed(template_name="main/logs.html"):
-        response = auth_client.get(reverse("main:logs", kwargs=dict(uuid=uuid)))
-    assert response.status_code == HTTPStatus.OK
-
-    mock.assert_called_once_with(str(uuid))
-    assert "log_text" in response.context
+        mock.assert_called_once_with(str(self.uuid))
+        assert "log_text" in response.context
 
 
 def test_process_flush(client, auth_client, mocker):
