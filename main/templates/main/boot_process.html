@@ -1,5 +1,6 @@
 {% extends "main/base.html" %}
 {% load crispy_forms_tags %}
+{% load django_bootstrap5 %}
 
 {% block title %}Boot Process{% endblock title %}
 
@@ -8,7 +9,7 @@
 <form action="{% url 'main:boot_process' %}" method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <input type="submit" value="Submit">
+    {% bootstrap_button button_type="submit" content="Submit" %}
 </form>
 
 {% endblock content %}
