@@ -60,10 +60,10 @@ Due to the complexities of containerising Kafka it is not possible to use the st
 Docker Compose setup. Instead when working with functionality that requires Kafka it is
 necessary to run the individual components manually.
 
+1. Start Kafka - See [Running drunc with pocket kafka].
+
 1. Start the drunc shell:
    `poetry run drunc-unified-shell --log-level debug ./data/process-manager-pocket-kafka.json`
-
-1. Start Kafka - See [Running drunc with pocket kafka].
 
 1. Start the application server:
    `poetry run python manage.py runserver`
