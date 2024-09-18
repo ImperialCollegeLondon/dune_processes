@@ -27,7 +27,7 @@ from .forms import BootProcessForm
 from .tables import ProcessTable
 
 # extreme hackiness suitable only for demonstration purposes
-# will replace this with per-user session storage - once we've added auth
+# TODO: replace this with per-user session storage - once we've added auth
 MESSAGES: list[str] = []
 """Broadcast messages to display to the user."""
 
