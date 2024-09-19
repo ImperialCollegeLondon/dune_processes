@@ -15,11 +15,12 @@ services:
   drunc:
     build: ./drunc_docker_service/
     command:
-      - sh
+      - bash
       - -c
       - |
-        service ssh start &&
-        drunc-process-manager --log-level debug file:///process-manager-no-kafka.json
+        /usr/sbin/sshd &&
+        source env.sh &&
+        drunc-process-manager --log-level debug file://./data/process-manager-no-kafka.json
     expose:
       - 10054
 volumes:

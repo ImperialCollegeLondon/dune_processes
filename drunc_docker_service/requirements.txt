@@ -1,2 +1,0 @@
-git+https://github.com/DUNE-DAQ/drunc.git@v0.10.4
-git+https://github.com/DUNE-DAQ/druncschema.git@v0.8.1

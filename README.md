@@ -45,6 +45,8 @@ To get started:
 
 ### Running the App
 
+_Note that this depends on a very large docker base image._
+
 To run this with a demo version of the drunc process manager, run it with docker compose:
 
 ```bash
@@ -57,4 +59,22 @@ Dummy processes can be sent to the server with the `scripts/talk_to_process_mana
 docker compose exec app python scripts/talk_to_process_manager.py
 ```
 
-Take the servers down with `docker compose down`
+To boot a more realistic test session:
+
+```bash
+docker compose exec drunc bash -c "source env.sh && drunc-process-manager-shell grpc://localhost:10054 boot test/config/test-session.data.xml test-session"
+```
+
+_Note that the above consumes several Gb of memory._
+
+Once booted you can interact with the root controller via:
+
+```bash
+docker compose exec drunc bash -c "source env.sh && drunc-controller-shell grpc://localhost:3333"
+```
+
+For details of working with the controller see the [drunc wiki].
+
+Take the servers down with `docker compose down`.
+
+[drunc wiki]: https://github.com/DUNE-DAQ/drunc/wiki/Controller
