@@ -1,6 +1,7 @@
 <!-- markdownlint-disable MD041 -->
 [![GitHub](https://img.shields.io/github/license/ImperialCollegeLondon/dune_processes)](https://raw.githubusercontent.com/ImperialCollegeLondon/dune_processes/main/LICENCE.txt)
 [![Test and build](https://github.com/ImperialCollegeLondon/dune_processes/actions/workflows/ci.yml/badge.svg)](https://github.com/ImperialCollegeLondon/dune_processes/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ImperialCollegeLondon/dune_processes/graph/badge.svg?token=PG0WTYF8EY)](https://codecov.io/gh/ImperialCollegeLondon/dune_processes)
 
 # DUNE processes web interface
 
