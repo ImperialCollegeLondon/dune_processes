@@ -67,11 +67,8 @@ class TestIndexView(LoginRequiredTest):
 class TestLogsView(LoginRequiredTest):
     """Tests for the logs view."""
 
-    @classmethod
-    def setup_class(cls):
-        """Set up the endpoint for the tests."""
-        cls.uuid = uuid4()
-        cls.endpoint = reverse("main:logs", kwargs=dict(uuid=cls.uuid))
+    uuid = uuid4()
+    endpoint = reverse("main:logs", kwargs=dict(uuid=uuid))
 
     def test_logs_view_authenticated(self, auth_client, mocker):
         """Test the logs view for an authenticated user."""
