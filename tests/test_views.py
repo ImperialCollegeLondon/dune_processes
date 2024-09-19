@@ -8,71 +8,102 @@ from pytest_django.asserts import assertContains, assertRedirects, assertTemplat
 from main.views import ProcessAction
 
 
-def test_index(client, auth_client, admin_client, mocker):
-    """Test the index view."""
-    mocker.patch("main.views.get_session_info")
+class LoginRequiredTest:
+    """Tests for views that require authentication."""
 
-    # Test with an anonymous client.
-    response = client.get(reverse("main:index"))
-    assert response.status_code == HTTPStatus.FOUND
-    assertRedirects(response, "/accounts/login/?next=/")
+    endpoint: str
 
-    # Test with an authenticated client.
-    with assertTemplateUsed(template_name="main/index.html"):
-        response = auth_client.get(reverse("main:index"))
-    assert response.status_code == HTTPStatus.OK
+    def test_login_redirect(self, client):
+        """Test that the view redirects to the login page."""
+        response = client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.FOUND
 
-    # Test with an admin client.
-    with assertTemplateUsed(template_name="main/index.html"):
-        response = admin_client.get(reverse("main:index"))
-    assert response.status_code == HTTPStatus.OK
-
-    assert "table" in response.context
-    assertContains(response, "Boot</a>")
+        assertRedirects(response, reverse("main:login") + f"?next={self.endpoint}")
 
 
-def test_logs(client, auth_client, mocker):
-    """Test the logs view."""
-    mock = mocker.patch("main.views._get_process_logs")
+class ProcessActionsTest(LoginRequiredTest):
+    """Grouping the tests for the process action views."""
+
+    action: ProcessAction
+
+    @classmethod
+    def setup_class(cls):
+        """Set up the endpoint for the tests."""
+        cls.uuid = uuid4()
+        cls.endpoint = reverse(f"main:{cls.action.value}", kwargs=dict(uuid=cls.uuid))
+
+    def test_process_action_view_authenticated(self, auth_client, mocker):
+        """Test the process action view for an authenticated user."""
+        mock = mocker.patch("main.views._process_call")
+        response = auth_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("main:index")
+
+        mock.assert_called_once_with(str(self.uuid), self.action)
+
+
+class TestIndexView(LoginRequiredTest):
+    """Tests for the index view."""
+
+    endpoint = reverse("main:index")
+
+    def test_index_view_authenticated(self, auth_client, mocker):
+        """Test the index view for an authenticated user."""
+        mocker.patch("main.views.get_session_info")
+        with assertTemplateUsed(template_name="main/index.html"):
+            response = auth_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_index_view_admin(self, admin_client, mocker):
+        """Test the index view for an admin user."""
+        mocker.patch("main.views.get_session_info")
+        with assertTemplateUsed(template_name="main/index.html"):
+            response = admin_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.OK
+        assert "table" in response.context
+        assertContains(response, "Boot</a>")
+
+
+class TestLogsView(LoginRequiredTest):
+    """Tests for the logs view."""
 
     uuid = uuid4()
+    endpoint = reverse("main:logs", kwargs=dict(uuid=uuid))
 
-    # Test with an anonymous client.
-    response = client.get(reverse("main:logs", kwargs=dict(uuid=uuid)))
-    assert response.status_code == HTTPStatus.FOUND
-    assertRedirects(response, f"/accounts/login/?next=/logs/{uuid}")
+    def test_logs_view_authenticated(self, auth_client, mocker):
+        """Test the logs view for an authenticated user."""
+        mock = mocker.patch("main.views._get_process_logs")
+        with assertTemplateUsed(template_name="main/logs.html"):
+            response = auth_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.OK
 
-    # Test with an authenticated client.
-    with assertTemplateUsed(template_name="main/logs.html"):
-        response = auth_client.get(reverse("main:logs", kwargs=dict(uuid=uuid)))
-    assert response.status_code == HTTPStatus.OK
-
-    mock.assert_called_once_with(str(uuid))
-    assert "log_text" in response.context
+        mock.assert_called_once_with(str(self.uuid))
+        assert "log_text" in response.context
 
 
-def test_process_flush(client, auth_client, mocker):
-    """Test the process_flush view."""
-    mock = mocker.patch("main.views._process_call")
+class TestProcessFlushView(ProcessActionsTest):
+    """Tests for the process flush view."""
 
-    uuid = uuid4()
-
-    # Test with an anonymous client.
-    response = client.get(reverse("main:flush", kwargs=dict(uuid=uuid)))
-    assert response.status_code == HTTPStatus.FOUND
-    assertRedirects(response, f"/accounts/login/?next=/flush/{uuid}")
-
-    # Test with an authenticated client.
-    response = auth_client.get(reverse("main:flush", kwargs=dict(uuid=uuid)))
-    assert response.status_code == HTTPStatus.FOUND
-    assert response.url == reverse("main:index")
-    mock.assert_called_once_with(str(uuid), ProcessAction.FLUSH)
+    action = ProcessAction.FLUSH
 
 
-class TestBootProcess:
+class TestProcessKillView(ProcessActionsTest):
+    """Tests for the process kill view."""
+
+    action = ProcessAction.KILL
+
+
+class TestProcessRestartView(ProcessActionsTest):
+    """Tests for the process restart view."""
+
+    action = ProcessAction.RESTART
+
+
+class TestBootProcess(LoginRequiredTest):
     """Grouping the tests for the BootProcess view."""
 
     template_name = "main/boot_process.html"
+    endpoint = reverse("main:boot_process")
 
     def test_boot_process_get(self, auth_client):
         """Test the GET request for the BootProcess view."""
@@ -82,12 +113,6 @@ class TestBootProcess:
 
         assert "form" in response.context
         assertContains(response, f'form action="{reverse("main:boot_process")}"')
-
-    def test_boot_process_get_anon(self, client):
-        """Test the GET request for the BootProcess view with an anonymous client."""
-        response = client.get(reverse("main:boot_process"))
-        assert response.status_code == HTTPStatus.FOUND
-        assertRedirects(response, "/accounts/login/?next=/boot_process/")
 
     def test_boot_process_post_invalid(self, auth_client):
         """Test the POST request for the BootProcess view with invalid data."""
