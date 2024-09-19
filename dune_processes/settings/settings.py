@@ -136,3 +136,7 @@ LOGIN_REDIRECT_URL = "main:index"
 
 INSTALLED_APPS += ["django_bootstrap5"]
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
+
+INSTALLED_APPS += ["crispy_forms", "crispy_bootstrap5"]
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
