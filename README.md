@@ -1,6 +1,6 @@
-# dune_processes
+# DUNE processes web interface
 
-This repo defines the web app for the Dune Process Manager web interface.
+This repo defines the web interface for the DUNE Process Manager.
 
 ## For developers
 
