@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertContains, assertTemplateUsed
+from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
 from main.views import ProcessAction
 
