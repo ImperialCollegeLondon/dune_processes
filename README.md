@@ -1,3 +1,7 @@
+<!-- markdownlint-disable MD041 -->
+[![GitHub](https://img.shields.io/github/license/ImperialCollegeLondon/dune_processes)](https://raw.githubusercontent.com/ImperialCollegeLondon/dune_processes/main/LICENCE.txt)
+[![Test and build](https://github.com/ImperialCollegeLondon/dune_processes/actions/workflows/ci.yml/badge.svg)](https://github.com/ImperialCollegeLondon/dune_processes/actions/workflows/ci.yml)
+
 # DUNE processes web interface
 
 This repo defines the web interface for the DUNE Process Manager.
