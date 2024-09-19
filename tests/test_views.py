@@ -18,9 +18,7 @@ class LoginRequiredTest:
         response = client.get(self.endpoint)
         assert response.status_code == HTTPStatus.FOUND
 
-        # AssertRedirects try to match the exact URL, but the URL may contain a query
-        # string. So, we just check the start of the URL.
-        assert response.url.startswith(reverse("main:login"))
+        assertRedirects(response, reverse("main:login") + f"?next={self.endpoint}")
 
 
 class ProcessActionsTest(LoginRequiredTest):
