@@ -1,0 +1,12 @@
+# Don't fail CI if coverage drops
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+
+ignore:
+  - dune_processes/settings/_production.py

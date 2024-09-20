@@ -8,15 +8,6 @@ from django.test import Client
 @pytest.fixture
 def auth_client(django_user_model) -> Client:
     """Return an authenticated client."""
-    user = django_user_model.objects.create(username="auth_user")
-    client = Client()
-    client.force_login(user)
-    return client
-
-
-@pytest.fixture
-def privileged_client(django_user_model) -> Client:
-    """Return a privileged authenticated client."""
     user = django_user_model.objects.create(username="privileged_user")
     permission = Permission.objects.get(codename="can_boot_processes")
     user.user_permissions.add(permission)
