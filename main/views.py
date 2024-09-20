@@ -5,7 +5,7 @@ import uuid
 from enum import Enum
 
 import django_tables2
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -100,6 +100,7 @@ async def _process_call(uuid: str, action: ProcessAction) -> None:
 
 
 @login_required
+@permission_required("main.can_restart_process", raise_exception=True)
 def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Restart the process associated to the given UUID.
 
@@ -116,6 +117,7 @@ def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
 
 
 @login_required
+@permission_required("main.can_kill_process", raise_exception=True)
 def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Kill the process associated to the given UUID.
 
@@ -131,6 +133,7 @@ def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
 
 
 @login_required
+@permission_required("main.can_flush_process", raise_exception=True)
 def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Flush the process associated to the given UUID.
 

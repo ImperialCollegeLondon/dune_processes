@@ -8,3 +8,7 @@ class MainConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "main"
+
+    def ready(self) -> None:
+        """Import permissions to ensure they are registered."""
+        import main.permissions  # noqa: F401
