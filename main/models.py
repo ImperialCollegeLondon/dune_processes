@@ -13,7 +13,9 @@ class User(AbstractUser):
         """Meta class for the User model."""
 
         permissions: ClassVar = [
+            ("can_boot_processes", "Can boot processes"),
             ("can_restart_processes", "Can restart processes"),
             ("can_flush_processes", "Can flush processes"),
             ("can_kill_processes", "Can kill processes"),
+            ("can_view_process_logs", "Can view process logs"),
         ]

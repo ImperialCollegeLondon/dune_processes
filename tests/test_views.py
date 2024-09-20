@@ -31,7 +31,7 @@ def test_index(client, auth_client, admin_client, mocker):
     assertContains(response, "Boot</a>")
 
 
-def test_logs(client, auth_client, mocker):
+def test_logs(client, auth_client, privileged_client, mocker):
     """Test the logs view."""
     mock = mocker.patch("main.views._get_process_logs")
 
@@ -42,16 +42,20 @@ def test_logs(client, auth_client, mocker):
     assert response.status_code == HTTPStatus.FOUND
     assertRedirects(response, f"/accounts/login/?next=/logs/{uuid}")
 
-    # Test with an authenticated client.
+    # Test with an unprivileged authenticated client.
+    response = auth_client.get(reverse("main:logs", kwargs=dict(uuid=uuid)))
+    assert response.status_code == HTTPStatus.FORBIDDEN
+
+    # Test with a privileged authenticated client.
     with assertTemplateUsed(template_name="main/logs.html"):
-        response = auth_client.get(reverse("main:logs", kwargs=dict(uuid=uuid)))
+        response = privileged_client.get(reverse("main:logs", kwargs=dict(uuid=uuid)))
     assert response.status_code == HTTPStatus.OK
 
     mock.assert_called_once_with(str(uuid))
     assert "log_text" in response.context
 
 
-def test_process_flush(client, auth_client, mocker):
+def test_process_flush(client, auth_client, privileged_client, mocker):
     """Test the process_flush view."""
     mock = mocker.patch("main.views._process_call")
 
@@ -62,8 +66,12 @@ def test_process_flush(client, auth_client, mocker):
     assert response.status_code == HTTPStatus.FOUND
     assertRedirects(response, f"/accounts/login/?next=/flush/{uuid}")
 
-    # Test with an authenticated client.
+    # Test with an unprivileged authenticated client.
     response = auth_client.get(reverse("main:flush", kwargs=dict(uuid=uuid)))
+    assert response.status_code == HTTPStatus.FORBIDDEN
+
+    # Test with a privileged authenticated client.
+    response = privileged_client.get(reverse("main:flush", kwargs=dict(uuid=uuid)))
     assert response.status_code == HTTPStatus.FOUND
     assert response.url == reverse("main:index")
     mock.assert_called_once_with(str(uuid), ProcessAction.FLUSH)
@@ -74,10 +82,10 @@ class TestBootProcess:
 
     template_name = "main/boot_process.html"
 
-    def test_boot_process_get(self, auth_client):
+    def test_boot_process_get(self, privileged_client):
         """Test the GET request for the BootProcess view."""
         with assertTemplateUsed(template_name=self.template_name):
-            response = auth_client.get(reverse("main:boot_process"))
+            response = privileged_client.get(reverse("main:boot_process"))
         assert response.status_code == HTTPStatus.OK
 
         assert "form" in response.context
@@ -89,18 +97,25 @@ class TestBootProcess:
         assert response.status_code == HTTPStatus.FOUND
         assertRedirects(response, "/accounts/login/?next=/boot_process/")
 
-    def test_boot_process_post_invalid(self, auth_client):
+    def test_boot_process_get_unprivileged(self, auth_client):
+        """Test the GET request for the BootProcess view with a privileged client."""
+        response = auth_client.get(reverse("main:boot_process"))
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_boot_process_post_invalid(self, privileged_client):
         """Test the POST request for the BootProcess view with invalid data."""
         with assertTemplateUsed(template_name=self.template_name):
-            response = auth_client.post(reverse("main:boot_process"), data=dict())
+            response = privileged_client.post(reverse("main:boot_process"), data=dict())
         assert response.status_code == HTTPStatus.OK
 
         assert "form" in response.context
 
-    def test_boot_process_post_valid(self, auth_client, mocker, dummy_session_data):
+    def test_boot_process_post_valid(
+        self, privileged_client, mocker, dummy_session_data
+    ):
         """Test the POST request for the BootProcess view."""
         mock = mocker.patch("main.views._boot_process")
-        response = auth_client.post(
+        response = privileged_client.post(
             reverse("main:boot_process"), data=dummy_session_data
         )
         assert response.status_code == HTTPStatus.FOUND
