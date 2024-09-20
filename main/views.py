@@ -100,7 +100,7 @@ async def _process_call(uuid: str, action: ProcessAction) -> None:
 
 
 @login_required
-@permission_required("can_restart_processes", raise_exception=True)
+@permission_required("auth.can_restart_processes", raise_exception=True)
 def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Restart the process associated to the given UUID.
 
@@ -117,7 +117,7 @@ def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
 
 
 @login_required
-@permission_required("main.can_kill_processes", raise_exception=True)
+@permission_required("auth.can_kill_processes", raise_exception=True)
 def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Kill the process associated to the given UUID.
 
@@ -133,7 +133,7 @@ def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
 
 
 @login_required
-@permission_required("main.can_flush_processes", raise_exception=True)
+@permission_required("auth.can_flush_processes", raise_exception=True)
 def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Flush the process associated to the given UUID.
 
