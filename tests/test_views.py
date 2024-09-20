@@ -98,7 +98,7 @@ class TestBootProcess:
         assertRedirects(response, "/accounts/login/?next=/boot_process/")
 
     def test_boot_process_get_unprivileged(self, auth_client):
-        """Test the GET request for the BootProcess view with a privileged client."""
+        """Test the GET request for the BootProcess view with an unprivileged client."""
         response = auth_client.get(reverse("main:boot_process"))
         assert response.status_code == HTTPStatus.FORBIDDEN
 
