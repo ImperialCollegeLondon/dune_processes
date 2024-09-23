@@ -9,13 +9,7 @@ from django.test import Client
 def auth_client(django_user_model) -> Client:
     """Return an authenticated client."""
     user = django_user_model.objects.create(username="privileged_user")
-    permission = Permission.objects.get(codename="can_boot_processes")
-    user.user_permissions.add(permission)
-    permission = Permission.objects.get(codename="can_restart_processes")
-    user.user_permissions.add(permission)
-    permission = Permission.objects.get(codename="can_flush_processes")
-    user.user_permissions.add(permission)
-    permission = Permission.objects.get(codename="can_kill_processes")
+    permission = Permission.objects.get(codename="can_modify_processes")
     user.user_permissions.add(permission)
     permission = Permission.objects.get(codename="can_view_process_logs")
     user.user_permissions.add(permission)

@@ -100,7 +100,7 @@ async def _process_call(uuid: str, action: ProcessAction) -> None:
 
 
 @login_required
-@permission_required("main.can_restart_processes", raise_exception=True)
+@permission_required("main.can_modify_processes", raise_exception=True)
 def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Restart the process associated to the given UUID.
 
@@ -117,7 +117,7 @@ def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
 
 
 @login_required
-@permission_required("main.can_kill_processes", raise_exception=True)
+@permission_required("main.can_modify_processes", raise_exception=True)
 def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Kill the process associated to the given UUID.
 
@@ -133,7 +133,7 @@ def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
 
 
 @login_required
-@permission_required("main.can_flush_processes", raise_exception=True)
+@permission_required("main.can_modify_processes", raise_exception=True)
 def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Flush the process associated to the given UUID.
 
@@ -198,7 +198,7 @@ class BootProcessView(PermissionRequiredMixin, FormView):  # type: ignore [type-
     template_name = "main/boot_process.html"
     form_class = BootProcessForm
     success_url = reverse_lazy("main:index")
-    permission_required = "main.can_boot_processes"
+    permission_required = "main.can_modify_processes"
 
     def form_valid(self, form: BootProcessForm) -> HttpResponse:
         """Boot a Process when valid form data has been POSTed.
