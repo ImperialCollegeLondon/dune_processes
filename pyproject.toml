@@ -14,7 +14,7 @@ whitenoise = "^6.7.0"
 drunc = { git = "https://github.com/DUNE-DAQ/drunc.git" }
 druncschema = { git = "https://github.com/DUNE-DAQ/druncschema.git" }
 django-tables2 = "^2.7.0"
-django-bootstrap5 = "^24.2"
+django-bootstrap5 = "^24.3"
 pytest-asyncio = "^0.24.0"
 django-crispy-forms = "^2.3"
 crispy-bootstrap5 = "^2024.2"
