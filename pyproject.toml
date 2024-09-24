@@ -47,7 +47,7 @@ module = "tests.*"
 disallow_untyped_defs = false
 
 [[tool.mypy.overrides]]
-module = ["druncschema.*", "drunc.*", "django_tables2.*"]
+module = ["druncschema.*", "drunc.*", "django_tables2.*", "kafka.*"]
 ignore_missing_imports = true
 
 [tool.django-stubs]
