@@ -112,7 +112,7 @@ def process_action(request: HttpRequest) -> HttpResponse:
         HttpResponse redirecting to the index page.
     """
     action = request.POST.get("action")
-    if action is None:
+    if action is None or action.lower() not in ProcessAction:
         return HttpResponseRedirect(reverse("main:index"))
 
     action_enum = ProcessAction(action.lower())
