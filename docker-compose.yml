@@ -2,11 +2,10 @@ services:
   app:
     build: .
     command:
-      - sh
+      - bash
       - -c
       - |
         python manage.py migrate
-        python scripts/kafka_consumer.py &
         python manage.py runserver 0:8000
     ports:
       - 127.0.0.1:8000:8000
@@ -15,14 +14,12 @@ services:
       - db:/usr/src/app/db
     environment:
       - PROCESS_MANAGER_URL=drunc:10054
-      - KAFKA_URL=kafka:9092
     depends_on:
-      kafka:
-        condition: service_healthy
+      - drunc
   drunc:
     build: ./drunc_docker_service/
     command:
-      - sh
+      - bash
       - -c
       - |
         service ssh start &&
@@ -48,5 +45,22 @@ services:
       interval: 1s
       timeout: 6s
       retries: 20
+  kafka_consumer:
+    build: .
+    command:
+      - bash
+      - -c
+      - |
+        python manage.py kafka_consumer --debug
+    environment:
+      - KAFKA_ADDRESS=kafka:9092
+    volumes:
+      - .:/usr/src/app
+      - db:/usr/src/app/db
+    depends_on:
+      kafka:
+        condition: service_healthy
+      app:
+        condition: service_started
 volumes:
   db:

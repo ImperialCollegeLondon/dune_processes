@@ -77,6 +77,12 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db" / "db.sqlite3",
+        # avoid database locking issues between Kafka consumer and web app
+        # https://docs.djangoproject.com/en/5.1/ref/databases/#database-is-locked-errors
+        "OPTIONS": {
+            "timeout": 5,
+            "transaction_mode": "IMMEDIATE",
+        },
     }
 }
 
@@ -143,3 +149,5 @@ PROCESS_MANAGER_URL = os.getenv("PROCESS_MANAGER_URL", "localhost:10054")
 INSTALLED_APPS += ["crispy_forms", "crispy_bootstrap5"]
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+KAFKA_ADDRESS = os.getenv("KAFKA_ADDRESS", "kafka:9092")
