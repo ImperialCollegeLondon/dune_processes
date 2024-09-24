@@ -59,11 +59,10 @@ docker compose exec app python scripts/talk_to_process_manager.py
 
 Take the servers down with `docker compose down`
 
-### Working with Kafka
+### Development without Docker Compose
 
-Due to the complexities of containerising Kafka it is not possible to use the standard
-Docker Compose setup. Instead when working with functionality that requires Kafka it is
-necessary to run the individual components manually.
+In the event that you want to develop without using Docker Compose you must start the
+required components manually.
 
 1. Start Kafka - See [Running drunc with pocket kafka].
 
