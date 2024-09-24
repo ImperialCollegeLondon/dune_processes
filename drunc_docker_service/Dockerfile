@@ -7,7 +7,7 @@ RUN apt-get update \
 COPY requirements.txt /
 RUN pip install --no-cache-dir -r /requirements.txt
 
-COPY process-manager-no-kafka.json /
+COPY process-manager-no-kafka.json process-manager-kafka.json /
 
 EXPOSE 22
 RUN mkdir -p /root/.ssh && \
