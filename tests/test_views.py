@@ -80,14 +80,14 @@ class TestProcessActionView(LoginRequiredTest):
     def test_process_action_valid_action(self, auth_client, mocker):
         """Test process_action view with a valid action."""
         mock = mocker.patch("main.views._process_call")
-        uuid_ = str(uuid4())
+        uuids_ = [str(uuid4()), str(uuid4())]
         response = auth_client.post(
-            self.endpoint, data={"action": "kill", "select": [uuid_]}
+            self.endpoint, data={"action": "kill", "select": uuids_}
         )
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse("main:index")
 
-        mock.assert_called_once_with(uuid_, ProcessAction.KILL)
+        mock.assert_called_once_with(uuids_, ProcessAction.KILL)
 
 
 class TestBootProcess(LoginRequiredTest):

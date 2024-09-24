@@ -80,22 +80,26 @@ class ProcessAction(Enum):
     FLUSH = "flush"
 
 
-async def _process_call(uuid: str, action: ProcessAction) -> None:
+async def _process_call(uuids: list[str], action: ProcessAction) -> None:
     """Perform an action on a process with a given UUID.
 
     Args:
-        uuid: UUID of the process to be actioned.
-        action: Action to be performed {restart,kill}.
+        uuids: List of UUIDs of the process to be actioned.
+        action: Action to be performed {restart,flush,kill}.
     """
     pmd = get_process_manager_driver()
-    query = ProcessQuery(uuids=[ProcessUUID(uuid=uuid)])
+    uuids_ = [ProcessUUID(uuid=u) for u in uuids]
 
     match action:
         case ProcessAction.RESTART:
-            await pmd.restart(query)
+            for uuid_ in uuids_:
+                query = ProcessQuery(uuids=[uuid_])
+                await pmd.restart(query)
         case ProcessAction.KILL:
+            query = ProcessQuery(uuids=uuids_)
             await pmd.kill(query)
         case ProcessAction.FLUSH:
+            query = ProcessQuery(uuids=uuids_)
             await pmd.flush(query)
 
 
@@ -117,8 +121,8 @@ def process_action(request: HttpRequest) -> HttpResponse:
     except ValueError:
         return HttpResponseRedirect(reverse("main:index"))
 
-    for uuid_ in request.POST.getlist("select"):
-        asyncio.run(_process_call(uuid_, action_enum))
+    if uuids_ := request.POST.getlist("select"):
+        asyncio.run(_process_call(uuids_, action_enum))
     return HttpResponseRedirect(reverse("main:index"))
 
 
