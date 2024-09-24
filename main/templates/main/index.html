@@ -4,9 +4,21 @@
 {% block title %}Home{% endblock title %}
 
 {% block content %}
+
 <div class="col">
+  {% if messages %}
+  <h2>Messages</h2>
+  <div style="white-space: pre-wrap;">
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+  </div>
+  <hr class="solid">
+  {% endif %}
+
   <a href="{% url 'main:boot_process' %}" class="btn btn-primary">Boot</a>
   {% render_table table %}
 </div>
+
 
 {% endblock content %}
