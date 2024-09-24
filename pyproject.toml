@@ -16,14 +16,16 @@ druncschema = { git = "https://github.com/DUNE-DAQ/druncschema.git" }
 django-tables2 = "^2.7.0"
 django-bootstrap5 = "^24.2"
 pytest-asyncio = "^0.24.0"
+django-crispy-forms = "^2.3"
+crispy-bootstrap5 = "^2024.2"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.2"
+pytest = "^8.3"
 pytest-cov = "^5.0.0"
 pytest-mypy = "^0.10.0"
 pytest-mock = "^3.7.0"
 pre-commit = "^3.0.4"
-ruff = "^0.6.4"
+ruff = "^0.6.5"
 django-stubs = { extras = ["compatible-mypy"], version = "^5.0.4" }
 pytest-django = "^4.9.0"
 

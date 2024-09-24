@@ -1,6 +1,11 @@
-# dune_processes
+<!-- markdownlint-disable MD041 -->
+[![GitHub](https://img.shields.io/github/license/ImperialCollegeLondon/dune_processes)](https://raw.githubusercontent.com/ImperialCollegeLondon/dune_processes/main/LICENSE)
+[![Test and build](https://github.com/ImperialCollegeLondon/dune_processes/actions/workflows/ci.yml/badge.svg)](https://github.com/ImperialCollegeLondon/dune_processes/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ImperialCollegeLondon/dune_processes/graph/badge.svg?token=PG0WTYF8EY)](https://codecov.io/gh/ImperialCollegeLondon/dune_processes)
 
-This repo defines the web app for the Dune Process Manager web interface.
+# DUNE processes web interface
+
+This repo defines the web interface for the DUNE Process Manager.
 
 ## For developers
 
