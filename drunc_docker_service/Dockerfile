@@ -18,8 +18,6 @@ RUN source /cvmfs/dunedaq.opensciencegrid.org/setup_dunedaq.sh && \
         pip install git+https://github.com/DUNE-DAQ/drunc.git@v0.10.2
 WORKDIR /basedir/fddaq-v5.1.0-a9/
 
-RUN ./.venv/bin/pip install --no-cache-dir -r requirements.txt
-
 COPY process-manager-no-kafka.json data/
 
 RUN mkdir -p /root/.ssh && \
