@@ -9,6 +9,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -136,6 +137,8 @@ LOGIN_REDIRECT_URL = "main:index"
 
 INSTALLED_APPS += ["django_bootstrap5"]
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
+
+PROCESS_MANAGER_URL = os.getenv("PROCESS_MANAGER_URL", "localhost:10054")
 
 INSTALLED_APPS += ["crispy_forms", "crispy_bootstrap5"]
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
