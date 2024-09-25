@@ -85,8 +85,9 @@ first if you don't have an active poetry shell.
 #### Running the web application with Poetry
 
 You can also start the web application though at a minimum this requires the drunc
-process manager to be running. See the next section on also working with Kafka. Assuming
-you have an active poetry shell for all steps:
+process manager to be running. Note that drunc only works on Linux so this approach will
+not work on any other platforms. See the next section on also working with
+Kafka. Assuming you have an active poetry shell for all steps:
 
 1. Start the drunc shell:
 
