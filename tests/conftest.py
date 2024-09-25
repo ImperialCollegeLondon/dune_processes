@@ -8,9 +8,27 @@ from django.test import Client
 @pytest.fixture
 def auth_client(django_user_model) -> Client:
     """Return an authenticated client."""
-    user = django_user_model.objects.create(username="privileged_user")
+    user = django_user_model.objects.create(username="user")
+    client = Client()
+    client.force_login(user)
+    return client
+
+
+@pytest.fixture
+def auth_process_client(django_user_model) -> Client:
+    """Return a authenticated client with modify process privilege."""
+    user = django_user_model.objects.create(username="process_user")
     permission = Permission.objects.get(codename="can_modify_processes")
     user.user_permissions.add(permission)
+    client = Client()
+    client.force_login(user)
+    return client
+
+
+@pytest.fixture
+def auth_logs_client(django_user_model) -> Client:
+    """Return a authenticated client with view logs privilege."""
+    user = django_user_model.objects.create(username="logs_user")
     permission = Permission.objects.get(codename="can_view_process_logs")
     user.user_permissions.add(permission)
     client = Client()
