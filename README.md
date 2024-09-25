@@ -81,11 +81,19 @@ an active poetry shell. You can also manually run pre-commit (e.g. `pre-commit r
 and the unit tests with `pytest`. Remember you'll need to prefix these with `poetry run`
 first if you don't have an active poetry shell.
 
-You can also start the web application though this will have very limited functionality
-without the drunc process manager or Kafka (see the next section on how to provide those
-services outside of Docker Compose).
+#### Running the web application with Poetry
 
-1. Run the main app ().:
+You can also start the web application though at a minimum this requires the drunc
+process manager to be running. See the next section on also working with Kafka. Assuming
+you have an active poetry shell for all steps:
+
+1. Start the drunc shell:
+
+   ```bash
+   drunc-unified-shell --log-level debug ./data/process-manager-no-kafka.json
+   ```
+
+1. In another terminal, run the main app:
 
    ```bash
    python manage.py runserver
@@ -97,21 +105,26 @@ services outside of Docker Compose).
    python manage.py createsuperuser
    ```
 
-#### Running the full application
+Note that if you boot any processes in the web application this will immediately die
+with an exit code of 255. This is because the drunc shell requires an ssh server on
+localhost in order to be able to run processes. In most cases this isn't very limiting.
+
+#### Running the web application with Poetry and Kafka
 
 In the event that you want to work with the full application without using Docker
-Compose you must start the required components manually.
+Compose you must start the required components manually. Assuming you have an active
+poetry shell for all steps.
 
 1. Start Kafka - See [Running drunc with pocket kafka].
 
 1. Start the drunc shell:
-   `poetry run drunc-unified-shell --log-level debug ./data/process-manager-pocket-kafka.json`
+   `drunc-unified-shell --log-level debug ./data/process-manager-pocket-kafka.json`
 
 1. Start the application server:
-   `poetry run python manage.py runserver`
+   `python manage.py runserver`
 
 1. Start the Kafka consumer:
-   `poetry run python scripts/kafka_consumer.py`
+   `python manage.py kafka_consumer --debug`
 
 From here you should be able to see broadcast messages displayed at the top of the index
 page on every refresh.
