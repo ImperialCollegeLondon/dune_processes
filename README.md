@@ -8,7 +8,45 @@
 
 This repo defines the web interface for the DUNE Process Manager.
 
-## For developers
+## Running the App
+
+To run with a demo version of the drunc process manager, run it with docker compose:
+
+```bash
+docker compose up
+```
+
+It can take a few moment for the services to boot but the application should then be
+available in the browser at <http://localhost:8000>.  Authentication is required to work
+with the application so you need to create a user account to work with:
+
+```bash
+docker compose exec app python manage.py createsuperuser
+```
+
+and follow the prompts. You should then be able to use the details you supplied to pass
+the login screen. You can use the "boot" button on the main page to create simple
+processes to experiment with. You can also do this via the command line:
+
+```bash
+docker compose exec app python scripts/talk_to_process_manager.py
+```
+
+Take the services down with `docker compose down`
+
+## Development
+
+Working with the full functionality of the web application requires a number of services
+to be started and to work in concert. The Docker Compose stack provides the required
+services and is suitable for development and manual testing but is not suitable for
+running QA (pre-commit) tooling or unit tests. The project directory is mounted into the
+`app` service which allows the Django development server's auto-reload mechanism to
+detect changes to local files and work as expected.
+
+It is recommended that you follow the below instructions on working with poetry to run
+the project's QA tooling and Unit Tests.
+
+### Working with Poetry
 
 This is a Python application that uses [poetry](https://python-poetry.org) for packaging
 and dependency management. It also provides [pre-commit](https://pre-commit.com/) hooks
@@ -38,32 +76,31 @@ To get started:
    pre-commit install
    ```
 
-1. Run the main app (this will not receive any data from the drunc process manager):
+Pre-commit should now work as expected when making commits even without the need to have
+an active poetry shell. You can also manually run pre-commit (e.g. `pre-commit run -a`)
+and the unit tests with `pytest`. Remember you'll need to prefix these with `poetry run`
+first if you don't have an active poetry shell.
+
+You can also start the web application though this will have very limited functionality
+without the drunc process manager or Kafka (see the next section on how to provide those
+services outside of Docker Compose).
+
+1. Run the main app ().:
 
    ```bash
    python manage.py runserver
    ```
 
-### Running the App
+1. As above you'll need to create a user to get past the login page:
 
-To run this with a demo version of the drunc process manager, run it with docker compose:
+   ```bash
+   python manage.py createsuperuser
+   ```
 
-```bash
-docker compose up -d
-```
+#### Running the full application
 
-Dummy processes can be sent to the server with the `scripts/talk_to_process_manager.py` script:
-
-```bash
-docker compose exec app python scripts/talk_to_process_manager.py
-```
-
-Take the servers down with `docker compose down`
-
-### Development without Docker Compose
-
-In the event that you want to develop without using Docker Compose you must start the
-required components manually.
+In the event that you want to work with the full application without using Docker
+Compose you must start the required components manually.
 
 1. Start Kafka - See [Running drunc with pocket kafka].
 
