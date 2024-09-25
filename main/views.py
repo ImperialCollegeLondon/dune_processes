@@ -93,71 +93,50 @@ class ProcessAction(Enum):
     FLUSH = "flush"
 
 
-async def _process_call(uuid: str, action: ProcessAction) -> None:
+async def _process_call(uuids: list[str], action: ProcessAction) -> None:
     """Perform an action on a process with a given UUID.
 
     Args:
-        uuid: UUID of the process to be actioned.
-        action: Action to be performed {restart,kill}.
+        uuids: List of UUIDs of the process to be actioned.
+        action: Action to be performed {restart,flush,kill}.
     """
     pmd = get_process_manager_driver()
-    query = ProcessQuery(uuids=[ProcessUUID(uuid=uuid)])
+    uuids_ = [ProcessUUID(uuid=u) for u in uuids]
 
     match action:
         case ProcessAction.RESTART:
-            await pmd.restart(query)
+            for uuid_ in uuids_:
+                query = ProcessQuery(uuids=[uuid_])
+                await pmd.restart(query)
         case ProcessAction.KILL:
+            query = ProcessQuery(uuids=uuids_)
             await pmd.kill(query)
         case ProcessAction.FLUSH:
+            query = ProcessQuery(uuids=uuids_)
             await pmd.flush(query)
 
 
 @login_required
 @permission_required("main.can_modify_processes", raise_exception=True)
-def restart_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
-    """Restart the process associated to the given UUID.
+def process_action(request: HttpRequest) -> HttpResponse:
+    """Perform an action on the selected processes.
+
+    Both the action and the selected processes are retrieved from the request.
 
     Args:
-        request: HttpRequest object. This is not used in the function, but is required
-            by Django.
-        uuid: UUID of the process to be restarted.
-
-    Returns:
-        HttpResponse, redirecting to the main page.
-    """
-    asyncio.run(_process_call(str(uuid), ProcessAction.RESTART))
-    return HttpResponseRedirect(reverse("main:index"))
-
-
-@login_required
-@permission_required("main.can_modify_processes", raise_exception=True)
-def kill_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
-    """Kill the process associated to the given UUID.
-
-    Args:
-        request: Django HttpRequest object (unused, but required by Django).
-        uuid: UUID of the process to be killed.
+        request: Django HttpRequest object.
 
     Returns:
         HttpResponse redirecting to the index page.
     """
-    asyncio.run(_process_call(str(uuid), ProcessAction.KILL))
-    return HttpResponseRedirect(reverse("main:index"))
+    try:
+        action = request.POST.get("action", "")
+        action_enum = ProcessAction(action.lower())
+    except ValueError:
+        return HttpResponseRedirect(reverse("main:index"))
 
-
-@login_required
-@permission_required("main.can_modify_processes", raise_exception=True)
-def flush_process(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
-    """Flush the process associated to the given UUID.
-
-    Args:
-        request: Django HttpRequest object (unused, but required by Django).
-        uuid: UUID of the process to be flushed.
-
-    Returns:
-        HttpResponse redirecting to the index page.
-    """
-    asyncio.run(_process_call(str(uuid), ProcessAction.FLUSH))
+    if uuids_ := request.POST.getlist("select"):
+        asyncio.run(_process_call(uuids_, action_enum))
     return HttpResponseRedirect(reverse("main:index"))
 
 
