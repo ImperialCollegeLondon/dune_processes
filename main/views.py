@@ -7,8 +7,8 @@ from http import HTTPStatus
 
 import django_tables2
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -117,6 +117,7 @@ async def _process_call(uuids: list[str], action: ProcessAction) -> None:
 
 
 @login_required
+@permission_required("main.can_modify_processes", raise_exception=True)
 def process_action(request: HttpRequest) -> HttpResponse:
     """Perform an action on the selected processes.
 
@@ -155,6 +156,7 @@ async def _get_process_logs(uuid: str) -> list[DecodedResponse]:
 
 
 @login_required
+@permission_required("main.can_view_process_logs", raise_exception=True)
 def logs(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """Display the logs of a process.
 
@@ -182,12 +184,13 @@ async def _boot_process(user: str, data: dict[str, str | int]) -> None:
         pass
 
 
-class BootProcessView(LoginRequiredMixin, FormView):  # type: ignore [type-arg]
+class BootProcessView(PermissionRequiredMixin, FormView):  # type: ignore [type-arg]
     """View for the BootProcess form."""
 
     template_name = "main/boot_process.html"
     form_class = BootProcessForm
     success_url = reverse_lazy("main:index")
+    permission_required = "main.can_modify_processes"
 
     def form_valid(self, form: BootProcessForm) -> HttpResponse:
         """Boot a Process when valid form data has been POSTed.
