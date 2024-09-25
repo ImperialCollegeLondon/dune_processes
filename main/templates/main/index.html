@@ -3,8 +3,16 @@
 
 {% block title %}Home{% endblock title %}
 
-{% block content %}
+{% block extra_css %}
+<style>
+  .card-body {
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+</style>
+{% endblock extra_css %}
 
+{% block content %}
 <div class="row">
   <div class="col">
     <a href="{% url 'main:boot_process' %}" class="btn btn-primary">Boot</a>
@@ -15,16 +23,16 @@
       <div class="card-header">
         Messages
       </div>
-      <ul class="list-group">
-        {% if messages %}
-          {% for message in messages %}
-            <li class="list-group-item">{{ message }}</li>
-          {% endfor %}
-        {% endif %}
-      </ul>
+      <div class="card-body">
+        <ul class="list-group">
+          {% if messages %}
+            {% for message in messages %}
+              <li class="list-group-item">{{ message }}</li>
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </div>
     </div>
   </div>
 </div>
-
-
 {% endblock content %}
