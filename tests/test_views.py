@@ -21,27 +21,6 @@ class LoginRequiredTest:
         assertRedirects(response, reverse("main:login") + f"?next={self.endpoint}")
 
 
-class ProcessActionsTest(LoginRequiredTest):
-    """Grouping the tests for the process action views."""
-
-    action: ProcessAction
-
-    @classmethod
-    def setup_class(cls):
-        """Set up the endpoint for the tests."""
-        cls.uuid = uuid4()
-        cls.endpoint = reverse(f"main:{cls.action.value}", kwargs=dict(uuid=cls.uuid))
-
-    def test_process_action_view_authenticated(self, auth_client, mocker):
-        """Test the process action view for an authenticated user."""
-        mock = mocker.patch("main.views._process_call")
-        response = auth_client.get(self.endpoint)
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("main:index")
-
-        mock.assert_called_once_with(str(self.uuid), self.action)
-
-
 class TestIndexView(LoginRequiredTest):
     """Tests for the index view."""
 
@@ -89,33 +68,58 @@ class TestLogsView(LoginRequiredTest):
     uuid = uuid4()
     endpoint = reverse("main:logs", kwargs=dict(uuid=uuid))
 
-    def test_logs_view_authenticated(self, auth_client, mocker):
-        """Test the logs view for an authenticated user."""
+    def test_logs_view_unprivileged(self, auth_client):
+        """Test the logs view for an unprivileged user."""
+        response = auth_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_logs_view_privileged(self, auth_logs_client, mocker):
+        """Test the logs view for a privileged user."""
         mock = mocker.patch("main.views._get_process_logs")
         with assertTemplateUsed(template_name="main/logs.html"):
-            response = auth_client.get(self.endpoint)
+            response = auth_logs_client.get(self.endpoint)
         assert response.status_code == HTTPStatus.OK
 
         mock.assert_called_once_with(str(self.uuid))
         assert "log_text" in response.context
 
 
-class TestProcessFlushView(ProcessActionsTest):
-    """Tests for the process flush view."""
+class TestProcessActionView(LoginRequiredTest):
+    """Tests for the process_action view."""
 
-    action = ProcessAction.FLUSH
+    endpoint = reverse("main:process_action")
 
+    def test_process_action_no_action(self, auth_process_client):
+        """Test process_action view with no action provided."""
+        response = auth_process_client.post(self.endpoint, data={})
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("main:index")
 
-class TestProcessKillView(ProcessActionsTest):
-    """Tests for the process kill view."""
+    def test_process_action_invalid_action(self, auth_process_client):
+        """Test process_action view with an invalid action."""
+        response = auth_process_client.post(
+            self.endpoint, data={"action": "invalid_action"}
+        )
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("main:index")
 
-    action = ProcessAction.KILL
+    @pytest.mark.parametrize("action", ["kill", "restart", "flush"])
+    def test_process_action_valid_action(self, action, auth_process_client, mocker):
+        """Test process_action view with a valid action."""
+        mock = mocker.patch("main.views._process_call")
+        uuids_ = [str(uuid4()), str(uuid4())]
+        response = auth_process_client.post(
+            self.endpoint, data={"action": action, "select": uuids_}
+        )
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("main:index")
 
+        mock.assert_called_once_with(uuids_, ProcessAction(action))
 
-class TestProcessRestartView(ProcessActionsTest):
-    """Tests for the process restart view."""
-
-    action = ProcessAction.RESTART
+    def test_process_action_get_unprivileged(self, auth_client):
+        """Test the GET request for the process_action view (unprivileged)."""
+        response = auth_client.get(reverse("main:boot_process"))
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
 
 class TestBootProcess(LoginRequiredTest):
@@ -124,27 +128,36 @@ class TestBootProcess(LoginRequiredTest):
     template_name = "main/boot_process.html"
     endpoint = reverse("main:boot_process")
 
-    def test_boot_process_get(self, auth_client):
-        """Test the GET request for the BootProcess view."""
+    def test_boot_process_get_unprivileged(self, auth_client):
+        """Test the GET request for the BootProcess view (unprivileged)."""
+        response = auth_client.get(reverse("main:boot_process"))
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_boot_process_get_privileged(self, auth_process_client):
+        """Test the GET request for the BootProcess view (privileged)."""
         with assertTemplateUsed(template_name=self.template_name):
-            response = auth_client.get(reverse("main:boot_process"))
+            response = auth_process_client.get(reverse("main:boot_process"))
         assert response.status_code == HTTPStatus.OK
 
         assert "form" in response.context
         assertContains(response, f'form action="{reverse("main:boot_process")}"')
 
-    def test_boot_process_post_invalid(self, auth_client):
+    def test_boot_process_post_invalid(self, auth_process_client):
         """Test the POST request for the BootProcess view with invalid data."""
         with assertTemplateUsed(template_name=self.template_name):
-            response = auth_client.post(reverse("main:boot_process"), data=dict())
+            response = auth_process_client.post(
+                reverse("main:boot_process"), data=dict()
+            )
         assert response.status_code == HTTPStatus.OK
 
         assert "form" in response.context
 
-    def test_boot_process_post_valid(self, auth_client, mocker, dummy_session_data):
+    def test_boot_process_post_valid(
+        self, auth_process_client, mocker, dummy_session_data
+    ):
         """Test the POST request for the BootProcess view."""
         mock = mocker.patch("main.views._boot_process")
-        response = auth_client.post(
+        response = auth_process_client.post(
             reverse("main:boot_process"), data=dummy_session_data
         )
         assert response.status_code == HTTPStatus.FOUND
