@@ -11,4 +11,5 @@ urlpatterns = [
     path("process_action/", views.process_action, name="process_action"),
     path("logs/<uuid:uuid>", views.logs, name="logs"),
     path("boot_process/", views.BootProcessView.as_view(), name="boot_process"),
+    path("message/", views.deposit_message, name="message"),
 ]
