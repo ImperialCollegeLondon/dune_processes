@@ -32,7 +32,8 @@ processes to experiment with. You can also do this via the command line:
 docker compose exec app python scripts/talk_to_process_manager.py
 ```
 
-Take the services down with `docker compose down`
+Take the services down with `docker compose down` or by pressing Ctrl+C in the
+corresponding terminal.
 
 ## Development
 
