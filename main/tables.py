@@ -33,6 +33,4 @@ class ProcessTable(tables.Table):
     status_code = tables.Column(verbose_name="Status Code")
     exit_code = tables.Column(verbose_name="Exit Code")
     logs = tables.TemplateColumn(logs_column_template, verbose_name="Logs")
-    restart = tables.TemplateColumn(restart_column_template, verbose_name="Restart")
-    flush = tables.TemplateColumn(flush_column_template, verbose_name="Flush")
-    kill = tables.TemplateColumn(kill_column_template, verbose_name="Kill")
+    select = tables.CheckBoxColumn(accessor="uuid", verbose_name="Select")

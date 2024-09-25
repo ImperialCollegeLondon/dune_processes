@@ -6,6 +6,7 @@
 {% block content %}
 
 <div class="col">
+
   {% if messages %}
   <h2>Messages</h2>
   <div style="white-space: pre-wrap;">
@@ -16,8 +17,15 @@
   <hr class="solid">
   {% endif %}
 
-  <a href="{% url 'main:boot_process' %}" class="btn btn-primary">Boot</a>
-  {% render_table table %}
+  <form method="post", action="{% url 'main:process_action' %}">
+    {% csrf_token %}
+    <a href="{% url 'main:boot_process' %}" class="btn btn-primary">Boot</a>
+    <input type="submit" value="Restart" class="btn btn-success", name="action", onclick="return confirm('Restart selected processes?')">
+    <input type="submit" value="Flush" class="btn btn-warning", name="action", onclick="return confirm('Flush selected processes?')">
+    <input type="submit" value="Kill" class="btn btn-danger", name="action", onclick="return confirm('Kill selected processes?')">
+    {% render_table table %}
+  </form>
+
 </div>
 
 
