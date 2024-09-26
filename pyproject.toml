@@ -26,6 +26,7 @@ pytest-mypy = "^0.10.0"
 pytest-mock = "^3.7.0"
 pre-commit = "^3.0.4"
 ruff = "^0.6.7"
+djlint = "^1.35.2"
 django-stubs = { extras = ["compatible-mypy"], version = "^5.0.4" }
 pytest-django = "^4.9.0"
 
@@ -78,3 +79,7 @@ pydocstyle.convention = "google"
     "D100",
     "D104",
 ] # Missing docstring in public module, Missing docstring in public package
+
+[tool.djlint]
+profile="django"
+indent=2
