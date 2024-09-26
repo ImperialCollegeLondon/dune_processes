@@ -32,8 +32,3 @@ repos:
     hooks:
       - id: codespell
         args: [-L, .codespell_ignore.txt]
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        types_or: [html]

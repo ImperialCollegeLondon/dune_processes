@@ -1,7 +1,12 @@
-{% extends "main/base.html" %} {% block title %}Logs{% endblock title %} {%
-block content %}
+{% extends "main/base.html" %}
 
-<div style="white-space: pre-wrap">{{ log_text }}</div>
+{% block title %}Logs{% endblock title %}
+
+{% block content %}
+
+<div style="white-space: pre-wrap;">
+{{ log_text }}
+</div>
 
 <a href="{% url 'main:index' %}">Return to table</a>
 

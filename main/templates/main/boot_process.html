@@ -1,10 +1,15 @@
-{% extends "main/base.html" %} {% load crispy_forms_tags %} {% load
-django_bootstrap5 %} {% block title %}Boot Process{% endblock title %} {% block
-content %}
+{% extends "main/base.html" %}
+{% load crispy_forms_tags %}
+{% load django_bootstrap5 %}
+
+{% block title %}Boot Process{% endblock title %}
+
+{% block content %}
 
 <form action="{% url 'main:boot_process' %}" method="post">
-    {% csrf_token %} {{ form|crispy }} {% bootstrap_button button_type="submit"
-    content="Submit" %}
+    {% csrf_token %}
+    {{ form|crispy }}
+    {% bootstrap_button button_type="submit" content="Submit" %}
 </form>
 
 {% endblock content %}
