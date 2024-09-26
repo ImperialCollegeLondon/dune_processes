@@ -1,10 +1,10 @@
 {% extends "main/base.html" %}
 {% block title %}
-    Logs
+  Logs
 {% endblock title %}
 {% block content %}
-    <!-- djlint:off H021 -->
-    <div style="white-space: pre-wrap;">{{ log_text }}</div>
-    <!-- djlint:on -->
-    <a href="{% url 'main:index' %}">Return to table</a>
+  <!-- djlint:off H021 -->
+  <div style="white-space: pre-wrap;">{{ log_text }}</div>
+  <!-- djlint:on -->
+  <a href="{% url 'main:index' %}">Return to table</a>
 {% endblock content %}

@@ -2,25 +2,25 @@
 {% load crispy_forms_tags %}
 {% load django_bootstrap5 %}
 {% block content %}
-    {% if form.errors %}<p>Your username and password didn't match. Please try again.</p>{% endif %}
-    {% if next %}
-        {% if user.is_authenticated %}
-            <p>
-                Your account doesn't have access to this page. To proceed,
-                please login with an account that has access.
-            </p>
-        {% else %}
-            <p>Please login to see this page.</p>
-        {% endif %}
+  {% if form.errors %}<p>Your username and password didn't match. Please try again.</p>{% endif %}
+  {% if next %}
+    {% if user.is_authenticated %}
+      <p>
+        Your account doesn't have access to this page. To proceed,
+        please login with an account that has access.
+      </p>
+    {% else %}
+      <p>Please login to see this page.</p>
     {% endif %}
-    <form method="post" action="{% url 'main:login' %}">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ next }}">
-        {{ form|crispy }}
-        {% bootstrap_button button_type="submit" content="Login" %}
-    </form>
-    {# Assumes you set up the password_reset view in your URLconf #}
-    <p>
-        <a href="{% url 'main:password_reset' %}">Lost password?</a>
-    </p>
+  {% endif %}
+  <form method="post" action="{% url 'main:login' %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {{ form|crispy }}
+    {% bootstrap_button button_type="submit" content="Login" %}
+  </form>
+  {# Assumes you set up the password_reset view in your URLconf #}
+  <p>
+    <a href="{% url 'main:password_reset' %}">Lost password?</a>
+  </p>
 {% endblock content %}
