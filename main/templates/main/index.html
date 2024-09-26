@@ -1,44 +1,53 @@
 {% extends "main/base.html" %}
 {% load render_table from django_tables2 %}
-
-{% block title %}Home{% endblock title %}
-
+{% block title %}
+    Home
+{% endblock title %}
 {% block extra_css %}
-<style>
+    <style>
   .card-body {
     max-height: 85vh;
     overflow-y: auto;
   }
-</style>
+    </style>
 {% endblock extra_css %}
-
 {% block content %}
-<div class="row">
-  <div class="col">
-    <form method="post", action="{% url 'main:process_action' %}">
-        {% csrf_token %}
-        <a href="{% url 'main:boot_process' %}" class="btn btn-primary">Boot</a>
-        <input type="submit" value="Restart" class="btn btn-success", name="action", onclick="return confirm('Restart selected processes?')">
-        <input type="submit" value="Flush" class="btn btn-warning", name="action", onclick="return confirm('Flush selected processes?')">
-        <input type="submit" value="Kill" class="btn btn-danger", name="action", onclick="return confirm('Kill selected processes?')">
-        {% render_table table %}
-      </form>
-  </div>
-  <div class="col">
-    <div class="card">
-      <div class="card-header">
-        Messages
-      </div>
-      <div class="card-body">
-        <ul class="list-group">
-          {% if messages %}
-            {% for message in messages %}
-              <li class="list-group-item">{{ message }}</li>
-            {% endfor %}
-          {% endif %}
-        </ul>
-      </div>
+    <div class="row">
+        <div class="col">
+            <!-- djlint:off H025 -->
+            <form method="post", action="{% url 'main:process_action' %}">
+                {% csrf_token %}
+                <a href="{% url 'main:boot_process' %}" class="btn btn-primary">Boot</a>
+                <input type="submit"
+                       value="Restart"
+                       class="btn btn-success"
+                       name="action"
+                       onclick="return confirm('Restart selected processes?')">
+                <input type="submit"
+                       value="Flush"
+                       class="btn btn-warning"
+                       name="action"
+                       onclick="return confirm('Flush selected processes?')">
+                <input type="submit"
+                       value="Kill"
+                       class="btn btn-danger"
+                       name="action"
+                       onclick="return confirm('Kill selected processes?')">
+            </form>
+            <!-- djlint:on -->
+            {% render_table table %}
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">Messages</div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% if messages %}
+                            {% for message in messages %}<li class="list-group-item">{{ message }}</li>{% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 {% endblock content %}
