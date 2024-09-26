@@ -1,24 +1,21 @@
-{% load static %}
-{% load django_bootstrap5 %}
-<!DOCTYPE html>
+{% load static %} {% load django_bootstrap5 %}
+<!doctype html>
 <html lang="en">
+    <head>
+        <title>{% block title %}SITE NAME{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {% bootstrap_css %} {% bootstrap_javascript %} {% block extra_css %}{%
+        endblock %}
+    </head>
 
-<head>
-    <title>{% block title %}SITE NAME{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    {% block extra_css %}{% endblock %}
-</head>
-
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <a class="navbar-brand" href="{% url 'main:index' %}">DUNE Process Manager</a>
-    </div>
-  </nav>
-  <div class="container py-3">
-    {% block content %}{% endblock %}
-  </div>
-</body>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'main:index' %}"
+                    >DUNE Process Manager</a
+                >
+            </div>
+        </nav>
+        <div class="container py-3">{% block content %}{% endblock %}</div>
+    </body>
 </html>
