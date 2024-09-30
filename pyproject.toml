@@ -27,7 +27,7 @@ pytest-mock = "^3.7.0"
 pre-commit = "^3.0.4"
 ruff = "^0.6.7"
 djlint = "^1.35.2"
-django-stubs = { extras = ["compatible-mypy"], version = "^5.0.4" }
+django-stubs = { extras = ["compatible-mypy"], version = "^5.1.0" }
 pytest-django = "^4.9.0"
 
 [build-system]
