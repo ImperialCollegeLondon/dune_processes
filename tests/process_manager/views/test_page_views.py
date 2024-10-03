@@ -12,13 +12,13 @@ class TestIndexView(LoginRequiredTest):
 
     endpoint = reverse("process_manager:index")
 
-    def test_index_view_authenticated(self, auth_client):
+    def test_authenticated(self, auth_client):
         """Test the index view for an authenticated user."""
         with assertTemplateUsed(template_name="process_manager/index.html"):
             response = auth_client.get(self.endpoint)
         assert response.status_code == HTTPStatus.OK
 
-    def test_index_view_admin(self, admin_client):
+    def test_admin(self, admin_client):
         """Test the index view for an admin user."""
         with assertTemplateUsed(template_name="process_manager/index.html"):
             response = admin_client.get(self.endpoint)
@@ -50,12 +50,12 @@ class TestLogsView(LoginRequiredTest):
     uuid = uuid4()
     endpoint = reverse("process_manager:logs", kwargs=dict(uuid=uuid))
 
-    def test_logs_view_unprivileged(self, auth_client):
+    def test_unprivileged(self, auth_client):
         """Test the logs view for an unprivileged user."""
         response = auth_client.get(self.endpoint)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-    def test_logs_view_privileged(self, auth_logs_client, mocker):
+    def test_privileged(self, auth_logs_client, mocker):
         """Test the logs view for a privileged user."""
         mock = mocker.patch("process_manager.views.pages.get_process_logs")
         with assertTemplateUsed(template_name="process_manager/logs.html"):
@@ -72,12 +72,12 @@ class TestBootProcess(LoginRequiredTest):
     template_name = "process_manager/boot_process.html"
     endpoint = reverse("process_manager:boot_process")
 
-    def test_boot_process_get_unprivileged(self, auth_client):
+    def test_get_unprivileged(self, auth_client):
         """Test the GET request for the BootProcess view (unprivileged)."""
         response = auth_client.get(reverse("process_manager:boot_process"))
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-    def test_boot_process_get_privileged(self, auth_process_client):
+    def test_get_privileged(self, auth_process_client):
         """Test the GET request for the BootProcess view (privileged)."""
         with assertTemplateUsed(template_name=self.template_name):
             response = auth_process_client.get(reverse("process_manager:boot_process"))
@@ -88,7 +88,7 @@ class TestBootProcess(LoginRequiredTest):
             response, f'form action="{reverse("process_manager:boot_process")}"'
         )
 
-    def test_boot_process_post_invalid(self, auth_process_client):
+    def test_post_invalid(self, auth_process_client):
         """Test the POST request for the BootProcess view with invalid data."""
         with assertTemplateUsed(template_name=self.template_name):
             response = auth_process_client.post(
@@ -98,9 +98,7 @@ class TestBootProcess(LoginRequiredTest):
 
         assert "form" in response.context
 
-    def test_boot_process_post_valid(
-        self, auth_process_client, mocker, dummy_session_data
-    ):
+    def test_post_valid(self, auth_process_client, mocker, dummy_session_data):
         """Test the POST request for the BootProcess view."""
         mock = mocker.patch("process_manager.views.pages.boot_process")
         response = auth_process_client.post(
