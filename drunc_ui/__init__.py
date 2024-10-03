@@ -1,1 +1,1 @@
-"""The main module for dune_processes."""
+"""The main module for drunc_ui."""

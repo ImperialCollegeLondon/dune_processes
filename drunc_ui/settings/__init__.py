@@ -1,3 +1,3 @@
-"""Django settings for dune_processes project."""
+"""Django settings for drunc_ui project."""
 
 from .settings import *  # noqa: F403
