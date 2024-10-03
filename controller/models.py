@@ -1,3 +1,3 @@
-from django.db import models
+"""Models module for the controller app."""
 
 # Create your models here.

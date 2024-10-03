@@ -1,3 +1,3 @@
-from django.contrib import admin
+"""Admin module for the controller app."""
 
 # Register your models here.

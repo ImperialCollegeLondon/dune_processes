@@ -1,3 +1,3 @@
-from django.shortcuts import render
+"""Views module for the controller app."""
 
 # Create your views here.
