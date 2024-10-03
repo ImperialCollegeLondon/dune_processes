@@ -15,3 +15,12 @@ class LoginRequiredTest:
         assert response.status_code == HTTPStatus.FOUND
 
         assertRedirects(response, reverse("main:login") + f"?next={self.endpoint}")
+
+
+class PermissionRequiredTest(LoginRequiredTest):
+    """Tests for views that require authentication and correct user permissions."""
+
+    def test_permission_deny(self, auth_client):
+        """Test that authenticated users missing permissions are blocked."""
+        response = auth_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.FORBIDDEN

@@ -6,10 +6,10 @@ from django.urls import reverse
 
 from process_manager.views.actions import ProcessAction
 
-from ...utils import LoginRequiredTest
+from ...utils import PermissionRequiredTest
 
 
-class TestProcessActionView(LoginRequiredTest):
+class TestProcessActionView(PermissionRequiredTest):
     """Tests for the process_action view."""
 
     endpoint = reverse("process_manager:process_action")
@@ -40,8 +40,3 @@ class TestProcessActionView(LoginRequiredTest):
         assert response.url == reverse("process_manager:index")
 
         mock.assert_called_once_with(uuids_, ProcessAction(action))
-
-    def test_get_unprivileged(self, auth_client):
-        """Test the GET request for the process_action view (unprivileged)."""
-        response = auth_client.get(reverse("process_manager:boot_process"))
-        assert response.status_code == HTTPStatus.FORBIDDEN

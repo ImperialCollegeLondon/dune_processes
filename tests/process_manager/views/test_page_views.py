@@ -4,7 +4,7 @@ from uuid import uuid4
 from django.urls import reverse
 from pytest_django.asserts import assertContains, assertTemplateUsed
 
-from ...utils import LoginRequiredTest
+from ...utils import LoginRequiredTest, PermissionRequiredTest
 
 
 class TestIndexView(LoginRequiredTest):
@@ -44,18 +44,13 @@ class TestIndexView(LoginRequiredTest):
         assert "messages" not in store.load()
 
 
-class TestLogsView(LoginRequiredTest):
+class TestLogsView(PermissionRequiredTest):
     """Tests for the logs view."""
 
     uuid = uuid4()
     endpoint = reverse("process_manager:logs", kwargs=dict(uuid=uuid))
 
-    def test_unprivileged(self, auth_client):
-        """Test the logs view for an unprivileged user."""
-        response = auth_client.get(self.endpoint)
-        assert response.status_code == HTTPStatus.FORBIDDEN
-
-    def test_privileged(self, auth_logs_client, mocker):
+    def test_get(self, auth_logs_client, mocker):
         """Test the logs view for a privileged user."""
         mock = mocker.patch("process_manager.views.pages.get_process_logs")
         with assertTemplateUsed(template_name="process_manager/logs.html"):
@@ -66,16 +61,11 @@ class TestLogsView(LoginRequiredTest):
         assert "log_text" in response.context
 
 
-class TestBootProcess(LoginRequiredTest):
+class TestBootProcess(PermissionRequiredTest):
     """Grouping the tests for the BootProcess view."""
 
     template_name = "process_manager/boot_process.html"
     endpoint = reverse("process_manager:boot_process")
-
-    def test_get_unprivileged(self, auth_client):
-        """Test the GET request for the BootProcess view (unprivileged)."""
-        response = auth_client.get(reverse("process_manager:boot_process"))
-        assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_get_privileged(self, auth_process_client):
         """Test the GET request for the BootProcess view (privileged)."""
