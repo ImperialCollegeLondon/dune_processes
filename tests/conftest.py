@@ -14,26 +14,29 @@ def auth_client(django_user_model) -> Client:
     return client
 
 
-@pytest.fixture
-def auth_process_client(django_user_model) -> Client:
-    """Return a authenticated client with modify process privilege."""
-    user = django_user_model.objects.create(username="process_user")
-    permission = Permission.objects.get(codename="can_modify_processes")
+def _privileged_user_client(django_user_model, username, permission_name):
+    user = django_user_model.objects.create(username=username)
+    permission = Permission.objects.get(codename=permission_name)
     user.user_permissions.add(permission)
     client = Client()
     client.force_login(user)
     return client
+
+
+@pytest.fixture
+def auth_process_client(django_user_model) -> Client:
+    """Return a authenticated client with modify process privilege."""
+    return _privileged_user_client(
+        django_user_model, "process_user", "can_modify_processes"
+    )
 
 
 @pytest.fixture
 def auth_logs_client(django_user_model) -> Client:
     """Return a authenticated client with view logs privilege."""
-    user = django_user_model.objects.create(username="logs_user")
-    permission = Permission.objects.get(codename="can_view_process_logs")
-    user.user_permissions.add(permission)
-    client = Client()
-    client.force_login(user)
-    return client
+    return _privileged_user_client(
+        django_user_model, "logs_user", "can_view_process_logs"
+    )
 
 
 @pytest.fixture
