@@ -6,7 +6,10 @@
 
 # DUNE Run Control User Interface (drunc-ui)
 
-This repo defines the web interface for the DUNE Process Manager.
+This repo defines the web interface for various drunc tools. Including:
+
+- The Processes Manager
+- The Controller
 
 ## Running the App
 
