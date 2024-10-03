@@ -40,3 +40,11 @@ def auth_logs_client(django_user_model) -> Client:
 def dummy_session_data() -> dict[str, str | int]:
     """A dictionary of dummy data to populate a dummy session."""
     return dict(session_name="sess_name", n_processes=1, sleep=5, n_sleeps=4)
+
+
+@pytest.fixture(autouse=True)
+def grpc_mock(mocker):
+    """Mock out the method that generates gRPC calls to external interfaces."""
+    yield mocker.patch(
+        "process_manager.process_manager_interface.ProcessManagerDriver.send_command_aio"
+    )

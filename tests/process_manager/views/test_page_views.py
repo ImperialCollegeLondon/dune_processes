@@ -12,27 +12,24 @@ class TestIndexView(LoginRequiredTest):
 
     endpoint = reverse("process_manager:index")
 
-    def test_index_view_authenticated(self, auth_client, mocker):
+    def test_index_view_authenticated(self, auth_client):
         """Test the index view for an authenticated user."""
-        mocker.patch("process_manager.process_manager_interface.get_session_info")
         with assertTemplateUsed(template_name="process_manager/index.html"):
             response = auth_client.get(self.endpoint)
         assert response.status_code == HTTPStatus.OK
 
-    def test_index_view_admin(self, admin_client, mocker):
+    def test_index_view_admin(self, admin_client):
         """Test the index view for an admin user."""
-        mocker.patch("process_manager.process_manager_interface.get_session_info")
         with assertTemplateUsed(template_name="process_manager/index.html"):
             response = admin_client.get(self.endpoint)
         assert response.status_code == HTTPStatus.OK
         assertContains(response, "Boot</a>")
 
-    def test_session_messages(self, auth_client, mocker):
+    def test_session_messages(self, auth_client):
         """Test the rendering of messages from the user session into the view."""
         from django.contrib.sessions.backends.db import SessionStore
         from django.contrib.sessions.models import Session
 
-        mocker.patch("process_manager.process_manager_interface.get_session_info")
         session = Session.objects.get()
         message_data = ["message 1", "message 2"]
         store = SessionStore(session_key=session.session_key)
@@ -60,9 +57,7 @@ class TestLogsView(LoginRequiredTest):
 
     def test_logs_view_privileged(self, auth_logs_client, mocker):
         """Test the logs view for a privileged user."""
-        mock = mocker.patch(
-            "process_manager.process_manager_interface._get_process_logs"
-        )
+        mock = mocker.patch("process_manager.views.pages.get_process_logs")
         with assertTemplateUsed(template_name="process_manager/logs.html"):
             response = auth_logs_client.get(self.endpoint)
         assert response.status_code == HTTPStatus.OK
@@ -107,7 +102,7 @@ class TestBootProcess(LoginRequiredTest):
         self, auth_process_client, mocker, dummy_session_data
     ):
         """Test the POST request for the BootProcess view."""
-        mock = mocker.patch("process_manager.process_manager_interface._boot_process")
+        mock = mocker.patch("process_manager.views.pages.boot_process")
         response = auth_process_client.post(
             reverse("process_manager:boot_process"), data=dummy_session_data
         )

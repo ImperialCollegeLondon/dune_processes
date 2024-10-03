@@ -31,7 +31,7 @@ class TestProcessActionView(LoginRequiredTest):
     @pytest.mark.parametrize("action", ["kill", "restart", "flush"])
     def test_process_action_valid_action(self, action, auth_process_client, mocker):
         """Test process_action view with a valid action."""
-        mock = mocker.patch("process_manager.process_manager_interface._process_call")
+        mock = mocker.patch("process_manager.views.actions.process_call")
         uuids_ = [str(uuid4()), str(uuid4())]
         response = auth_process_client.post(
             self.endpoint, data={"action": action, "select": uuids_}
