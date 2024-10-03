@@ -45,39 +45,56 @@ async def get_session_info() -> ProcessInstanceList:
 @login_required
 def index(request: HttpRequest) -> HttpResponse:
     """View that renders the index/home page."""
-    val = asyncio.run(get_session_info())
-
-    status_enum_lookup = dict(item[::-1] for item in ProcessInstance.StatusCode.items())
-
-    table_data = []
-    process_instances = val.data.values
-    for process_instance in process_instances:
-        metadata = process_instance.process_description.metadata
-        table_data.append(
-            {
-                "uuid": process_instance.uuid.uuid,
-                "name": metadata.name,
-                "user": metadata.user,
-                "session": metadata.session,
-                "status_code": status_enum_lookup[process_instance.status_code],
-                "exit_code": process_instance.return_code,
-            }
-        )
-
-    table = ProcessTable(table_data)
-
-    # sort table data based on request parameters
-    table_configurator = django_tables2.RequestConfig(request)
-    table_configurator.configure(table)
-
     with transaction.atomic():
         # atomic to avoid race condition with kafka consumer
         messages = request.session.load().get("messages", [])
         request.session.pop("messages", [])
         request.session.save()
 
-    context = {"table": table, "messages": messages}
+    context = {"messages": messages}
     return render(request=request, context=context, template_name="main/index.html")
+
+
+@login_required
+def process_table(request: HttpRequest) -> HttpResponse:
+    """Renders the process table.
+
+    This view may be called using either GET or POST methods. GET renders the table with
+    no check boxes selected. POST renders the table with checked boxes for any table row
+    with a uuid provided in the select key of the request data.
+    """
+    selected_rows = request.POST.getlist("select", [])
+    session_info = asyncio.run(get_session_info())
+
+    status_enum_lookup = dict(item[::-1] for item in ProcessInstance.StatusCode.items())
+
+    table_data = []
+    process_instances = session_info.data.values
+    for process_instance in process_instances:
+        metadata = process_instance.process_description.metadata
+        uuid = process_instance.uuid.uuid
+        table_data.append(
+            {
+                "uuid": uuid,
+                "name": metadata.name,
+                "user": metadata.user,
+                "session": metadata.session,
+                "status_code": status_enum_lookup[process_instance.status_code],
+                "exit_code": process_instance.return_code,
+                "checked": (uuid in selected_rows),
+            }
+        )
+    table = ProcessTable(table_data)
+
+    # sort table data based on request parameters
+    table_configurator = django_tables2.RequestConfig(request)
+    table_configurator.configure(table)
+
+    return render(
+        request=request,
+        context=dict(table=table),
+        template_name="main/partials/process_table.html",
+    )
 
 
 # an enum for process actions
