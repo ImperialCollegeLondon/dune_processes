@@ -26,6 +26,9 @@ logs_column_template = "<a href=\"{% url 'main:logs' record.uuid %}\">LOGS</a>"
 class ProcessTable(tables.Table):
     """Defines and Process Table for the data from the Process Manager."""
 
+    class Meta:  # noqa: D106
+        orderable = False
+
     uuid = tables.Column(verbose_name="UUID")
     name = tables.Column(verbose_name="Name")
     user = tables.Column(verbose_name="User")
