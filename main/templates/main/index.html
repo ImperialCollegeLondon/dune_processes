@@ -2,3 +2,11 @@
 {% block title %}
   Home
 {% endblock title %}
+{% block content %}
+  <div class="row">
+    <div class="col">
+      <a href="{% url 'process_manager:index' %}" class="btn btn-secondary">Process Manager</a>
+      <a href="{% url 'controller:index' %}" class="btn btn-secondary">Controller</a>
+    </div>
+  </div>
+{% endblock content %}
