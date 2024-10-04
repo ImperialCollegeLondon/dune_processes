@@ -1,4 +1,4 @@
-"""WSGI config for dune_processes project.
+"""WSGI config for drunc_ui project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -10,6 +10,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dune_processes.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "drunc_ui.settings")
 
 application = get_wsgi_application()

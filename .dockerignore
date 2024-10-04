@@ -3,6 +3,6 @@
 !manage.py
 !pyproject.toml
 !poetry.lock
-!dune_processes
+!drunc_ui
 !db
 db/*
