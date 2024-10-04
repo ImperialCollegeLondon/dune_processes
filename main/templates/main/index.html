@@ -1,5 +1,4 @@
 {% extends "main/base.html" %}
-{% load render_table from django_tables2 %}
 {% block title %}
   Home
 {% endblock title %}
@@ -32,7 +31,9 @@
                class="btn btn-danger"
                name="action"
                onclick="return confirm('Kill selected processes?')">
-        {% render_table table %}
+        <div hx-get="{% url 'main:process_table' %}"
+             hx-swap="outerHTML"
+             hx-trigger="load"></div>
       </form>
     </div>
     <div class="col">
