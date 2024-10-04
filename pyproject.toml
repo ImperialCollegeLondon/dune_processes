@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "dune_processes"
+name = "drunc_ui"
 version = "0.1.0"
 description = "[Description for project.]"
 authors = [
@@ -52,11 +52,11 @@ module = ["druncschema.*", "drunc.*", "django_tables2.*", "kafka.*"]
 ignore_missing_imports = true
 
 [tool.django-stubs]
-django_settings_module = "dune_processes.settings"
+django_settings_module = "drunc_ui.settings"
 
 [tool.pytest.ini_options]
-addopts = "-v --mypy -p no:warnings --cov=dune_processes --cov-report=html --doctest-modules --ignore=manage.py --ignore=dune_processes/settings/"
-DJANGO_SETTINGS_MODULE = "dune_processes.settings"
+addopts = "-v --mypy -p no:warnings --cov=drunc_ui --cov-report=html --doctest-modules --ignore=manage.py --ignore=drunc_ui/settings/"
+DJANGO_SETTINGS_MODULE = "drunc_ui.settings"
 FAIL_INVALID_TEMPLATE_VARS = true
 
 [tool.ruff]

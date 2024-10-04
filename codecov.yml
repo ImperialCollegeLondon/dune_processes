@@ -9,4 +9,4 @@ coverage:
         informational: true
 
 ignore:
-  - dune_processes/settings/_production.py
+  - drunc_ui/settings/_production.py
