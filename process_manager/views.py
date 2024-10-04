@@ -1,4 +1,4 @@
-"""Views for the main app."""
+"""Views for the process_manager app."""
 
 import asyncio
 import uuid
@@ -77,7 +77,9 @@ def index(request: HttpRequest) -> HttpResponse:
         request.session.save()
 
     context = {"table": table, "messages": messages}
-    return render(request=request, context=context, template_name="main/index.html")
+    return render(
+        request=request, context=context, template_name="process_manager/index.html"
+    )
 
 
 class ProcessAction(Enum):
@@ -128,11 +130,11 @@ def process_action(request: HttpRequest) -> HttpResponse:
         action = request.POST.get("action", "")
         action_enum = ProcessAction(action.lower())
     except ValueError:
-        return HttpResponseRedirect(reverse("main:index"))
+        return HttpResponseRedirect(reverse("process_manager:index"))
 
     if uuids_ := request.POST.getlist("select"):
         asyncio.run(_process_call(uuids_, action_enum))
-    return HttpResponseRedirect(reverse("main:index"))
+    return HttpResponseRedirect(reverse("process_manager:index"))
 
 
 async def _get_process_logs(uuid: str) -> list[DecodedResponse]:
@@ -164,7 +166,9 @@ def logs(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     """
     logs_response = asyncio.run(_get_process_logs(str(uuid)))
     context = dict(log_text="\n".join(val.data.line for val in logs_response))
-    return render(request=request, context=context, template_name="main/logs.html")
+    return render(
+        request=request, context=context, template_name="process_manager/logs.html"
+    )
 
 
 async def _boot_process(user: str, data: dict[str, str | int]) -> None:
@@ -182,9 +186,9 @@ async def _boot_process(user: str, data: dict[str, str | int]) -> None:
 class BootProcessView(PermissionRequiredMixin, FormView):  # type: ignore [type-arg]
     """View for the BootProcess form."""
 
-    template_name = "main/boot_process.html"
+    template_name = "process_manager/boot_process.html"
     form_class = BootProcessForm
-    success_url = reverse_lazy("main:index")
+    success_url = reverse_lazy("process_manager:index")
     permission_required = "main.can_modify_processes"
 
     def form_valid(self, form: BootProcessForm) -> HttpResponse:
