@@ -30,6 +30,9 @@ logs_column_template = (
 class ProcessTable(tables.Table):
     """Defines and Process Table for the data from the Process Manager."""
 
+    class Meta:  # noqa: D106
+        orderable = False
+
     uuid = tables.Column(verbose_name="UUID")
     name = tables.Column(verbose_name="Name")
     user = tables.Column(verbose_name="User")
@@ -37,4 +40,6 @@ class ProcessTable(tables.Table):
     status_code = tables.Column(verbose_name="Status Code")
     exit_code = tables.Column(verbose_name="Exit Code")
     logs = tables.TemplateColumn(logs_column_template, verbose_name="Logs")
-    select = tables.CheckBoxColumn(accessor="uuid", verbose_name="Select")
+    select = tables.CheckBoxColumn(
+        accessor="uuid", verbose_name="Select", checked="checked"
+    )
