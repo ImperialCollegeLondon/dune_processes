@@ -1,4 +1,4 @@
-"""Forms for the main app."""
+"""Forms for the process_manager app."""
 
 from django import forms
 
