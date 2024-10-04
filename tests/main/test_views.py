@@ -3,7 +3,7 @@ from http import HTTPStatus
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
-from .utils import LoginRequiredTest
+from ..utils import LoginRequiredTest
 
 
 class TestIndexView(LoginRequiredTest):
@@ -13,7 +13,6 @@ class TestIndexView(LoginRequiredTest):
 
     def test_index_view_authenticated(self, auth_client, mocker):
         """Test the index view for an authenticated user."""
-        mocker.patch("main.views.get_session_info")
         with assertTemplateUsed(template_name="main/index.html"):
             response = auth_client.get(self.endpoint)
         assert response.status_code == HTTPStatus.OK

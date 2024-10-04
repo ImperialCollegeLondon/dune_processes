@@ -1,1 +1,1 @@
-"""Unit tests for MyProject."""
+"""Unit tests for drunc_ui."""
