@@ -1,10 +1,10 @@
-"""Tables for the main app."""
+"""Tables for the process_manager app."""
 
 import django_tables2 as tables
 
 restart_column_template = (
     "<a href={href} onclick=\"return confirm('{message}')\">{text}</a>".format(
-        href="\"{% url 'main:restart' record.uuid%}\"",
+        href="\"{% url 'process_manager:restart' record.uuid%}\"",
         message="You are about to restart process {{record.uuid}}. Are you sure?",
         text="RESTART",
     )
@@ -12,15 +12,19 @@ restart_column_template = (
 
 kill_column_template = (
     "<a href={href} onclick=\"return confirm('{message}')\">{text}</a>".format(
-        href="\"{% url 'main:kill' record.uuid%}\"",
+        href="\"{% url 'process_manager:kill' record.uuid%}\"",
         message="You are about to kill process {{record.uuid}}. Are you sure?",
         text="KILL",
     )
 )
 
-flush_column_template = "<a href=\"{% url 'main:flush' record.uuid %}\">FLUSH</a>"
+flush_column_template = (
+    "<a href=\"{% url 'process_manager:flush' record.uuid %}\">FLUSH</a>"
+)
 
-logs_column_template = "<a href=\"{% url 'main:logs' record.uuid %}\">LOGS</a>"
+logs_column_template = (
+    "<a href=\"{% url 'process_manager:logs' record.uuid %}\">LOGS</a>"
+)
 
 
 class ProcessTable(tables.Table):

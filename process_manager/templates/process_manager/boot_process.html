@@ -5,7 +5,7 @@
   Boot Process
 {% endblock title %}
 {% block content %}
-  <form action="{% url 'main:boot_process' %}" method="post">
+  <form action="{% url 'process_manager:boot_process' %}" method="post">
     {% csrf_token %}
     {{ form|crispy }}
     {% bootstrap_button button_type="submit" content="Submit" %}
