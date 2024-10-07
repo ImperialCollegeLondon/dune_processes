@@ -1,6 +1,6 @@
 from django import forms
 
-from main.forms import BootProcessForm
+from process_manager.forms import BootProcessForm
 
 
 def test_boot_form_empty():
