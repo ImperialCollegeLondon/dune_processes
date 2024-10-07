@@ -17,7 +17,7 @@ django-tables2 = "^2.7.0"
 django-bootstrap5 = "^24.3"
 pytest-asyncio = "^0.24.0"
 django-crispy-forms = "^2.3"
-crispy-bootstrap5 = "^2024.2"
+crispy-bootstrap5 = "^2024.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3"
