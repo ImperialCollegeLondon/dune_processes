@@ -24,6 +24,7 @@ def process_action(request: HttpRequest) -> HttpResponse:
         action = request.POST.get("action", "")
         action_enum = ProcessAction(action.lower())
     except ValueError:
+        # action.lower() is not a valid enum value
         return HttpResponseRedirect(reverse("process_manager:index"))
 
     if uuids_ := request.POST.getlist("select"):
