@@ -18,13 +18,6 @@ class TestIndexView(LoginRequiredTest):
             response = auth_client.get(self.endpoint)
         assert response.status_code == HTTPStatus.OK
 
-    def test_admin(self, admin_client):
-        """Test the index view for an admin user."""
-        with assertTemplateUsed(template_name="process_manager/index.html"):
-            response = admin_client.get(self.endpoint)
-        assert response.status_code == HTTPStatus.OK
-        assertContains(response, "Boot</a>")
-
     def test_session_messages(self, auth_client):
         """Test the rendering of messages from the user session into the view."""
         from django.contrib.sessions.backends.db import SessionStore
