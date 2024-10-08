@@ -18,24 +18,6 @@ class TestIndexView(LoginRequiredTest):
             response = auth_client.get(self.endpoint)
         assert response.status_code == HTTPStatus.OK
 
-    def test_session_messages(self, auth_client):
-        """Test the rendering of messages from the user session into the view."""
-        from django.contrib.sessions.backends.db import SessionStore
-        from django.contrib.sessions.models import Session
-
-        session = Session.objects.get()
-        message_data = ["message 1", "message 2"]
-        store = SessionStore(session_key=session.session_key)
-        store["messages"] = message_data
-        store.save()
-
-        response = auth_client.get(self.endpoint)
-        assert response.status_code == HTTPStatus.OK
-
-        # messages have been removed from the session and added to the context
-        assert response.context["messages"] == message_data
-        assert "messages" not in store.load()
-
 
 class TestLogsView(PermissionRequiredTest):
     """Tests for the logs view."""

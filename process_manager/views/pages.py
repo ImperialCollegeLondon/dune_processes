@@ -4,7 +4,6 @@ import uuid
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -17,16 +16,7 @@ from ..process_manager_interface import boot_process, get_process_logs
 @login_required
 def index(request: HttpRequest) -> HttpResponse:
     """View that renders the index/home page."""
-    with transaction.atomic():
-        # atomic to avoid race condition with kafka consumer
-        messages = request.session.load().get("messages", [])
-        request.session.pop("messages", [])
-        request.session.save()
-
-    context = {"messages": messages}
-    return render(
-        request=request, context=context, template_name="process_manager/index.html"
-    )
+    return render(request=request, template_name="process_manager/index.html")
 
 
 @login_required
