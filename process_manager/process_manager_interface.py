@@ -1,6 +1,7 @@
 """Module providing functions to interact with the drunc process manager."""
 
 import asyncio
+from collections.abc import Iterable
 from enum import Enum
 
 from django.conf import settings
@@ -41,7 +42,7 @@ class ProcessAction(Enum):
     FLUSH = "flush"
 
 
-async def _process_call(uuids: list[str], action: ProcessAction) -> None:
+async def _process_call(uuids: Iterable[str], action: ProcessAction) -> None:
     pmd = get_process_manager_driver()
     uuids_ = [ProcessUUID(uuid=u) for u in uuids]
 
@@ -58,7 +59,7 @@ async def _process_call(uuids: list[str], action: ProcessAction) -> None:
             await pmd.flush(query)
 
 
-def process_call(uuids: list[str], action: ProcessAction) -> None:
+def process_call(uuids: Iterable[str], action: ProcessAction) -> None:
     """Perform an action on a process with a given UUID.
 
     Args:

@@ -48,7 +48,7 @@ def logs(request: HttpRequest, uuid: uuid.UUID) -> HttpResponse:
     )
 
 
-class BootProcessView(PermissionRequiredMixin, FormView):  # type: ignore [type-arg]
+class BootProcessView(PermissionRequiredMixin, FormView[BootProcessForm]):
     """View for the BootProcess form."""
 
     template_name = "process_manager/boot_process.html"
