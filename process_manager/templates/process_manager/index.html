@@ -13,6 +13,15 @@
     }
   </style>
 {% endblock extra_css %}
+{% block extra_js %}
+  <script language="JavaScript">
+  function toggle(source) {
+      checkboxes = document.getElementsByName('select');
+      for(var i in checkboxes)
+          checkboxes[i].checked = source.checked;
+  }
+  </script>
+{% endblock extra_js %}
 {% block content %}
   <div class="row">
     <div class="col">
