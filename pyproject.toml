@@ -56,7 +56,7 @@ ignore_missing_imports = true
 django_settings_module = "drunc_ui.settings"
 
 [tool.pytest.ini_options]
-addopts = "-v --mypy -p no:warnings --cov=drunc_ui --cov-report=html --doctest-modules --ignore=manage.py --ignore=drunc_ui/settings/"
+addopts = "-v --mypy -p no:warnings --cov=. --cov-report=html --doctest-modules --ignore=manage.py --ignore=drunc_ui/settings/"
 DJANGO_SETTINGS_MODULE = "drunc_ui.settings"
 FAIL_INVALID_TEMPLATE_VARS = true
 
@@ -84,3 +84,6 @@ pydocstyle.convention = "google"
 [tool.djlint]
 profile = "django"
 indent = 2
+
+[tool.coverage.run]
+omit = ["tests/*", "scripts/*"]
