@@ -4,10 +4,13 @@
 {% endblock title %}
 {% block extra_css %}
   <style>
-  .card-body {
-    max-height: 85vh;
-    overflow-y: auto;
-  }
+    #message-hide {
+      float: right;
+    }
+    #message-list {
+      max-height: 85vh;
+      overflow-y: auto;
+    }
   </style>
 {% endblock extra_css %}
 {% block content %}
@@ -37,10 +40,17 @@
              hx-trigger="load"></div>
       </form>
     </div>
-    <div class="col">
+    <div class="col" id="message-panel">
       <div class="card">
-        <div class="card-header">Messages</div>
-        <div class="card-body">
+        <div class="card-header">
+          Messages
+          <button class="btn-close"
+                  id="message-hide"
+                  type="button"
+                  aria-label="Close"
+                  _="on click hide #message-panel"></button>
+        </div>
+        <div class="card-body" id="message-list">
           <ul class="list-group">
             {% if messages %}
               {% for message in messages %}<li class="list-group-item">{{ message }}</li>{% endfor %}
