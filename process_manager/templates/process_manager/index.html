@@ -35,6 +35,10 @@
                class="btn btn-danger"
                name="action"
                onclick="return confirm('Kill selected processes?')">
+        <button id="message-show"
+                type="button"
+                class="btn btn-info"
+                _="on load hide me on click hide me show #message-panel">Show Messages</button>
         <div hx-get="{% url 'process_manager:process_table' %}"
              hx-swap="outerHTML"
              hx-trigger="load"></div>
@@ -44,11 +48,11 @@
       <div class="card">
         <div class="card-header">
           Messages
-          <button class="btn-close"
-                  id="message-hide"
+          <button id="message-hide"
                   type="button"
-                  aria-label="Close"
-                  _="on click hide #message-panel"></button>
+                  class="btn-close"
+                  aria-label="Hide Messages"
+                  _="on click hide #message-panel show #message-show"></button>
         </div>
         <div class="card-body" id="message-list">
           <ul class="list-group">
