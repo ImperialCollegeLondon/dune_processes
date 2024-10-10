@@ -14,7 +14,7 @@ from ...models import DruncMessage
 
 
 class Command(BaseCommand):
-    """Consumes messages from Kafka and stores them in active user sessions."""
+    """Consumes messages from Kafka and stores them in the database."""
 
     help = __doc__
 
@@ -60,7 +60,7 @@ class Command(BaseCommand):
 
                 MSG_PERSIST_TIME = 60  # seconds
 
-                # Remove outdated messages from the database.
+                # Remove expired messages from the database.
                 expire_time = datetime.now(tz=UTC) - timedelta(seconds=MSG_PERSIST_TIME)
                 with transaction.atomic():
                     # atomic here to prevent race condition with messages being
