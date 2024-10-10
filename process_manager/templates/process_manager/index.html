@@ -4,10 +4,13 @@
 {% endblock title %}
 {% block extra_css %}
   <style>
-  .card-body {
-    max-height: 85vh;
-    overflow-y: auto;
-  }
+    #hide-messages-button {
+      float: right;
+    }
+    #message-list {
+      max-height: 85vh;
+      overflow-y: auto;
+    }
   </style>
 {% endblock extra_css %}
 {% block content %}
@@ -32,15 +35,26 @@
                class="btn btn-danger"
                name="action"
                onclick="return confirm('Kill selected processes?')">
+        <button id="show-messages-button"
+                type="button"
+                class="btn btn-info"
+                _="on load hide me on click hide me show #message-panel">Show Messages</button>
         <div hx-get="{% url 'process_manager:process_table' %}"
              hx-swap="outerHTML"
              hx-trigger="load"></div>
       </form>
     </div>
-    <div class="col">
+    <div class="col" id="message-panel">
       <div class="card">
-        <div class="card-header">Messages</div>
-        <div class="card-body">
+        <div class="card-header">
+          Messages
+          <button id="hide-messages-button"
+                  type="button"
+                  class="btn-close"
+                  aria-label="Hide Messages"
+                  _="on click hide #message-panel show #show-messages-button"></button>
+        </div>
+        <div class="card-body" id="message-list">
           <ul class="list-group">
             {% if messages %}
               {% for message in messages %}<li class="list-group-item">{{ message }}</li>{% endfor %}
