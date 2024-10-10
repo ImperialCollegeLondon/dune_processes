@@ -41,5 +41,8 @@ class ProcessTable(tables.Table):
     exit_code = tables.Column(verbose_name="Exit Code")
     logs = tables.TemplateColumn(logs_column_template, verbose_name="Logs")
     select = tables.CheckBoxColumn(
-        accessor="uuid", verbose_name="Select", checked="checked"
+        accessor="uuid",
+        verbose_name="Select",
+        checked="checked",
+        attrs={"th__input": {"onclick": "toggle(this)"}},
     )

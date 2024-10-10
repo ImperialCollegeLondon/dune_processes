@@ -48,6 +48,11 @@ def process_table(request: HttpRequest) -> HttpResponse:
     table_configurator = django_tables2.RequestConfig(request)
     table_configurator.configure(table)
 
+    # If all rows are selected, we check the header box
+    # The value is irrelevant, we just need to set the attribute
+    if len(selected_rows) == len(table_data):
+        table.columns["select"].attrs["th__input"]["checked"] = "checked"
+
     return render(
         request=request,
         context=dict(table=table),

@@ -31,7 +31,7 @@ class TestProcessTableView(LoginRequiredTest):
         for instance_mock, uuid in zip(instance_mocks, uuids):
             instance_mock.uuid.uuid = str(uuid)
             instance_mock.status_code = 0
-        mock.data.values.__iter__.return_value = instance_mocks
+        mock().data.values.__iter__.return_value = instance_mocks
         return mock
 
     def test_post_checked_rows(self, mocker, auth_client):
@@ -48,6 +48,25 @@ class TestProcessTableView(LoginRequiredTest):
 
         for row in table.data.data:
             assert row["checked"] == (row["uuid"] in selected_uuids)
+        assert "checked" not in table.columns["select"].attrs["th__input"]
+
+    def test_post_header_checked(self, mocker, auth_client):
+        """Tests header checkbox is checked if all rows are checked."""
+        all_uuids = [str(uuid4()) for _ in range(5)]
+        selected_uuids = all_uuids
+
+        self._mock_session_info(mocker, all_uuids)
+
+        response = auth_client.post(self.endpoint, data=dict(select=selected_uuids))
+        assert response.status_code == HTTPStatus.OK
+        table = response.context["table"]
+        assert isinstance(table, ProcessTable)
+
+        # All rows should be checked
+        assert all(row["checked"] for row in table.data.data)
+
+        # So header should be checked as well
+        assert table.columns["select"].attrs["th__input"]["checked"] == "checked"
 
 
 class TestMessagesView(LoginRequiredTest):
