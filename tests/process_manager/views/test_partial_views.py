@@ -31,7 +31,7 @@ class TestProcessTableView(LoginRequiredTest):
         for instance_mock, uuid in zip(instance_mocks, uuids):
             instance_mock.uuid.uuid = str(uuid)
             instance_mock.status_code = 0
-        mock.data.values.__iter__.return_value = instance_mocks
+        mock().data.values.__iter__.return_value = instance_mocks
         return mock
 
     def test_post_checked_rows(self, mocker, auth_client):
@@ -50,9 +50,6 @@ class TestProcessTableView(LoginRequiredTest):
             assert row["checked"] == (row["uuid"] in selected_uuids)
         assert "checked" not in table.columns["select"].attrs["th__input"]
 
-    @pytest.mark.xfail(
-        reason="Header checkbox is not checked. Something to do with the mock."
-    )
     def test_post_header_checked(self, mocker, auth_client):
         """Tests header checkbox is checked if all rows are checked."""
         all_uuids = [str(uuid4()) for _ in range(5)]
@@ -68,8 +65,7 @@ class TestProcessTableView(LoginRequiredTest):
         # All rows should be checked
         assert all(row["checked"] for row in table.data.data)
 
-        # Header should be checked - but it is not because, apparently, the
-        # table_data has not data!
+        # So header should be checked as well
         assert table.columns["select"].attrs["th__input"]["checked"] == "checked"
 
 
