@@ -38,3 +38,11 @@ class TestIndexView(LoginRequiredTest):
             response,
             f'<a href="{reverse("controller:index")}" class="btn btn-secondary">Controller</a>',  # noqa: E501
         )
+
+    def test_help_view(self, auth_client):
+        """Test that the help view is rendered."""
+        response = auth_client.get(reverse("main:help"))
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "main/help.html")
+        assertContains(response, "<h1>Help</h1>")
+        assertContains(response, "This is the help page.")
