@@ -18,8 +18,8 @@ class User(AbstractUser):
         ]
 
 
-class BroadcastMessage(models.Model):
-    """Model for Kafka broadcast messages."""
+class DruncMessage(models.Model):
+    """Model for drunc broadcast messages."""
 
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField()
     message = models.TextField()
