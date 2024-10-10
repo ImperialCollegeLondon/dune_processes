@@ -14,6 +14,8 @@ services:
       - db:/usr/src/app/db
   drunc:
     build: ./drunc_docker_service/
+    profiles:
+      - drunc
     command:
       - bash
       - -c
@@ -21,6 +23,18 @@ services:
         /usr/sbin/sshd &&
         source env.sh &&
         drunc-process-manager --log-level debug file://./data/process-manager-no-kafka.json
+    expose:
+      - 10054
+  drunc-lite:
+    build: ./drunc_docker_service_lite/
+    profiles:
+      - drunc-lite
+    command:
+      - sh
+      - -c
+      - |
+        service ssh start &&
+        drunc-process-manager --log-level debug file:///process-manager-no-kafka.json
     expose:
       - 10054
 volumes:
