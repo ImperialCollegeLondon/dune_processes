@@ -5,9 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from druncschema.process_manager_pb2 import (
-    ProcessInstance,
-)
+from druncschema.process_manager_pb2 import ProcessInstance
+
+from main.models import DruncMessage
 
 from ..process_manager_interface import get_session_info
 from ..tables import ProcessTable
@@ -62,13 +62,11 @@ def process_table(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def messages(request: HttpRequest) -> HttpResponse:
-    """Renders and pops Kafka messages from the user's session."""
+    """Renders Kafka messages from the database."""
     with transaction.atomic():
-        # atomic to avoid race condition with kafka consumer
-        messages = request.session.load().get("messages", [])
-        request.session.pop("messages", [])
-        request.session.save()
-
+        messages = [
+            f"{msg.timestamp}: {msg.message}" for msg in DruncMessage.objects.all()
+        ]
     return render(
         request=request,
         context=dict(messages=messages[::-1]),

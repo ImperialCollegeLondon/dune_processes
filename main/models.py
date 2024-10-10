@@ -3,7 +3,7 @@
 from typing import ClassVar
 
 from django.contrib.auth.models import AbstractUser
-from django.db import models  # noqa: F401
+from django.db import models
 
 
 class User(AbstractUser):
@@ -16,3 +16,10 @@ class User(AbstractUser):
             ("can_modify_processes", "Can modify processes"),
             ("can_view_process_logs", "Can view process logs"),
         ]
+
+
+class DruncMessage(models.Model):
+    """Model for drunc broadcast messages."""
+
+    timestamp = models.DateTimeField()
+    message = models.TextField()
