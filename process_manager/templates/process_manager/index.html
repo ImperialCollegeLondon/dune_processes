@@ -56,9 +56,9 @@
         </div>
         <div class="card-body" id="message-list">
           <ul class="list-group">
-            {% if messages %}
-              {% for message in messages %}<li class="list-group-item">{{ message }}</li>{% endfor %}
-            {% endif %}
+            <div hx-get="{% url 'process_manager:messages' %}"
+                 hx-trigger="every 1s"
+                 hx-swap="afterend"></div>
           </ul>
         </div>
       </div>

@@ -8,6 +8,7 @@ app_name = "process_manager"
 
 partial_urlpatterns = [
     path("process_table/", partials.process_table, name="process_table"),
+    path("messages/", partials.messages, name="messages"),
 ]
 
 urlpatterns = [

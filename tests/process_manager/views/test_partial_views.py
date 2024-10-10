@@ -4,6 +4,7 @@ from uuid import uuid4
 
 import pytest
 from django.urls import reverse
+from pytest_django.asserts import assertTemplateUsed
 
 from process_manager.tables import ProcessTable
 
@@ -47,3 +48,28 @@ class TestProcessTableView(LoginRequiredTest):
 
         for row in table.data.data:
             assert row["checked"] == (row["uuid"] in selected_uuids)
+
+
+class TestMessagesView(LoginRequiredTest):
+    """Test the process_manager.views.messages view function."""
+
+    endpoint = reverse("process_manager:messages")
+
+    def test_get(self, auth_client):
+        """Tests basic calls of view method."""
+        from django.contrib.sessions.backends.db import SessionStore
+        from django.contrib.sessions.models import Session
+
+        session = Session.objects.get()
+        message_data = ["message 1", "message 2"]
+        store = SessionStore(session_key=session.session_key)
+        store["messages"] = message_data
+        store.save()
+
+        with assertTemplateUsed("process_manager/partials/message_items.html"):
+            response = auth_client.get(self.endpoint)
+        assert response.status_code == HTTPStatus.OK
+
+        # messages have been removed from the session and added to the context
+        assert response.context["messages"] == message_data[::-1]
+        assert "messages" not in store.load()
