@@ -1,15 +1,16 @@
 """Django management command to populate Kafka messages into application database."""
 
 from argparse import ArgumentParser
+from datetime import UTC, datetime
 from typing import Any
 
 from django.conf import settings
-from django.contrib.sessions.backends.db import SessionStore
-from django.contrib.sessions.models import Session
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from druncschema.broadcast_pb2 import BroadcastMessage
 from kafka import KafkaConsumer
+
+from ...models import DruncMessage
 
 
 class Command(BaseCommand):
@@ -31,11 +32,17 @@ class Command(BaseCommand):
         self.stdout.write("Listening for messages from Kafka.")
         while True:
             for messages in consumer.poll(timeout_ms=500).values():
+                message_timestamps = []
                 message_bodies = []
                 for message in messages:
                     if debug:
                         self.stdout.write(f"Message received: {message}")
                         self.stdout.flush()
+
+                    # Convert Kafka timestamp (milliseconds) to datetime (seconds).
+                    timestamp = datetime.fromtimestamp(message.timestamp / 1e3, tz=UTC)
+                    message_timestamps.append(timestamp)
+
                     bm = BroadcastMessage()
                     bm.ParseFromString(message.value)
                     message_bodies.append(bm.data.value.decode("utf-8"))
@@ -44,8 +51,9 @@ class Command(BaseCommand):
                     with transaction.atomic():
                         # atomic here to prevent race condition with messages being
                         # popped by the web application
-                        sessions = Session.objects.all()
-                        for session in sessions:
-                            store = SessionStore(session_key=session.session_key)
-                            store.setdefault("messages", []).extend(message_bodies)
-                            store.save()
+                        DruncMessage.objects.bulk_create(
+                            [
+                                DruncMessage(timestamp=t, message=msg)
+                                for t, msg in zip(message_timestamps, message_bodies)
+                            ]
+                        )
